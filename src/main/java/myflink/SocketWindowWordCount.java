@@ -19,7 +19,7 @@ import org.apache.flink.util.Collector;
 public class SocketWindowWordCount {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env =StreamExecutionEnvironment.getExecutionEnvironment();
-        DataStream<String> text =env.socketTextStream("localhost",9000,"\n");
+        DataStream<String> text =env.socketTextStream("192.168.100.201",9999,"\n");
         DataStream<Tuple2<String,Integer>> wordCount=text.flatMap(new FlatMapFunction<String, Tuple2<String, Integer>>() {
             @Override
             public void flatMap(String value, Collector<Tuple2<String, Integer>> out) throws Exception {
@@ -30,8 +30,9 @@ public class SocketWindowWordCount {
         });
         DataStream<Tuple2<String, Integer>> resultCounts = wordCount
                 .keyBy(0)
-                //.timeWindow(Time.seconds(5))
+                .timeWindow(Time.seconds(5))
                 .sum(1);
+
         resultCounts.print().setParallelism(1);
         env.execute(" Socket Window WordCount");
     }

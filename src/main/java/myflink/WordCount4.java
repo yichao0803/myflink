@@ -1,21 +1,3 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package myflink;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
@@ -25,6 +7,14 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.Preconditions;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * Implements the "WordCount" program that computes a simple word occurrence histogram
@@ -42,60 +32,118 @@ import org.apache.flink.util.Preconditions;
  * <li>write and use user-defined functions.
  * </ul>
  */
-public class WordCount {
+public class WordCount4 {
 
     // *************************************************************************
     //     PROGRAM
     // *************************************************************************
-
     public static void main(String[] args) throws Exception {
 
-        final ParameterTool params = ParameterTool.fromArgs(args);
+        final ParameterTool params2 = ParameterTool.fromArgs(args);
 
         // set up the execution environment
-        final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+        final ExecutionEnvironment env2 = ExecutionEnvironment.getExecutionEnvironment();
 
+        env2.setParallelism(1);
         // make parameters available in the web interface
-        env.getConfig().setGlobalJobParameters(params);
+        env2.getConfig().setGlobalJobParameters(params2);
 
-        // get input data
-        DataSet<String> text = null;
-        if (params.has("input")) {
-            System.out.println(params.get("input"));
-            // union all the inputs from text files
-//            for (String input : params.get("input")) {
-//                if (text == null) {
-//                    text = env.readTextFile(input);
-//                } else {
-//                    text = text.union(env.readTextFile(input));
-//                }
-//            }
-            String input =params.get("input");
-            text=env.readTextFile(input);
-
-            Preconditions.checkNotNull(text, "Input DataSet should not be null.");
-        } else {
-            // get default test text data
-            System.out.println("Executing WordCount example with default input data set.");
-            System.out.println("Use --input to specify file input.");
-            text = WordCountData.getDefaultTextLineDataSet(env);
+        int count = 10;
+        if (params2.has("count")) {
+            count = params2.getInt("count");
         }
 
-        DataSet<Tuple2<String, Integer>> counts =
-                // split up the lines in pairs (2-tuples) containing: (word,1)
-                text.flatMap(new Tokenizer())
-                        // group by the tuple field "0" and sum up tuple field "1"
-                        .groupBy(0)
-                        .sum(1);
+        // 创建容量为NUMBER的线程池。
+        ExecutorService exeService = Executors.newFixedThreadPool(10);
+        // 线程返回值
+        ArrayList<Future<Integer>> futures = new ArrayList<>();
 
-        // emit result
-        if (params.has("output")) {
-            counts.writeAsCsv(params.get("output"), "\n", " ");
-            // execute program
-            env.execute("WordCount Example");
-        } else {
-            System.out.println("Printing result to stdout. Use --output to specify output path.");
-            counts.print();
+        for (int i = 0; i < count; i++) {
+            TndspfcdFlagResult flagResult= new TndspfcdFlagResult(env2,i,count,params2);
+
+            // 为每次就诊建立一个新线程
+            TaskThreadFlagResult taskThreadFlagResult = new TaskThreadFlagResult(flagResult);
+            // 线程返回值
+            Future<Integer> future = exeService.submit(taskThreadFlagResult);
+            futures.add(future);
+        }
+        exeService.shutdown();
+    }
+
+
+    /**
+     * 多线程查询数据，返回结果LIST
+     */
+    public static class TaskThreadFlagResult implements Callable<Integer> {
+
+        private TndspfcdFlagResult flagResult;
+
+        public TaskThreadFlagResult(TndspfcdFlagResult flagResult) {
+            this.flagResult = flagResult;
+        }
+
+        @Override
+        public Integer call() throws Exception {
+
+            String jobName="WordCount Example [" + (flagResult.i+1) + "/" + flagResult.count + "]";
+
+            try {
+                // get input data
+                DataSet<String> text2 = null;
+
+                if (flagResult.params2.has("input")) {
+                    System.out.println(flagResult.params2.get("input"));
+
+                    String input = flagResult.params2.get("input");
+                    text2 = flagResult.env2.readTextFile(input);
+
+                    Preconditions.checkNotNull(text2, "Input DataSet should not be null.");
+                } else {
+                    // get default test text data
+                    System.out.println("Executing WordCount example with default input data set.");
+                    System.out.println("Use --input to specify file input.");
+                    text2 = WordCountData.getDefaultTextLineDataSet(flagResult.env2);
+                }
+
+                DataSet<Tuple2<String, Integer>> counts =
+                        // split up the lines in pairs (2-tuples) containing: (word,1)
+                        text2.flatMap(new Tokenizer())
+                                // group by the tuple field "0" and sum up tuple field "1"
+                                .groupBy(0)
+                                .sum(1);
+
+                // emit result
+                if (flagResult.params2.has("output")) {
+                    counts.writeAsCsv(flagResult.params2.get("output")+File.separator+(flagResult.i+1), "\n", " ");
+                    // execute program
+                } else {
+                    System.out.println("Printing result to stdout. Use --output to specify output path.");
+
+                    counts.print();
+
+                }
+                System.out.println(jobName);
+                // flagResult.env2.execute(jobName);
+            } catch (Exception e) {
+                e.printStackTrace();
+//                        System.out.println(e.getMessage());
+//                        System.out.println(e.getStackTrace());
+            }
+
+            return 0;
+        }
+    }
+
+    public static class  TndspfcdFlagResult{
+        ExecutionEnvironment env2;
+        Integer i;
+        Integer count;
+        ParameterTool params2;
+        TndspfcdFlagResult(ExecutionEnvironment env2,Integer i,Integer count,ParameterTool params2){
+            this.env2=env2;
+            this.i=i;
+            this.count=count;
+            this.params2=params2;
         }
     }
 
