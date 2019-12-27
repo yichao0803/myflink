@@ -25,12 +25,13 @@ public class SocketWindowWordCount {
             public void flatMap(String value, Collector<Tuple2<String, Integer>> out) throws Exception {
                   for (String word:value.split("\\s")){
                       out.collect(Tuple2.of(word,1));
+                      Thread.sleep(1000);
                   }
             }
         });
         DataStream<Tuple2<String, Integer>> resultCounts = wordCount
                 .keyBy(0)
-                .timeWindow(Time.seconds(5))
+                .timeWindow(Time.seconds(1))
                 .sum(1);
 
         resultCounts.print().setParallelism(1);
