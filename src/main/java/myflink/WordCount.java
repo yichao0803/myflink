@@ -19,6 +19,7 @@
 package myflink;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.operators.Order;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -86,7 +87,7 @@ public class WordCount {
                 text.flatMap(new Tokenizer())
                         // group by the tuple field "0" and sum up tuple field "1"
                         .groupBy(0)
-                        .sum(1);
+                        .sum(1).sortPartition(1, Order.ASCENDING);
 
         // emit result
         if (params.has("output")) {
