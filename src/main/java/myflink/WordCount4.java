@@ -59,7 +59,7 @@ public class WordCount4 {
         ArrayList<Future<Integer>> futures = new ArrayList<>();
 
         for (int i = 0; i < count; i++) {
-            TndspfcdFlagResult flagResult= new TndspfcdFlagResult(env2,i,count,params2);
+            TndspfcdFlagResult flagResult = new TndspfcdFlagResult(env2, i, count, params2);
 
             // 为每次就诊建立一个新线程
             TaskThreadFlagResult taskThreadFlagResult = new TaskThreadFlagResult(flagResult);
@@ -85,7 +85,7 @@ public class WordCount4 {
         @Override
         public Integer call() throws Exception {
 
-            String jobName="WordCount Example [" + (flagResult.i+1) + "/" + flagResult.count + "]";
+            String jobName = "WordCount Example [" + (flagResult.i + 1) + "/" + flagResult.count + "]";
 
             try {
                 // get input data
@@ -114,7 +114,7 @@ public class WordCount4 {
 
                 // emit result
                 if (flagResult.params2.has("output")) {
-                    counts.writeAsCsv(flagResult.params2.get("output")+File.separator+(flagResult.i+1), "\n", " ");
+                    counts.writeAsCsv(flagResult.params2.get("output") + File.separator + (flagResult.i + 1), "\n", " ");
                     // execute program
                 } else {
                     System.out.println("Printing result to stdout. Use --output to specify output path.");
@@ -134,16 +134,17 @@ public class WordCount4 {
         }
     }
 
-    public static class  TndspfcdFlagResult{
+    public static class TndspfcdFlagResult {
         ExecutionEnvironment env2;
         Integer i;
         Integer count;
         ParameterTool params2;
-        TndspfcdFlagResult(ExecutionEnvironment env2,Integer i,Integer count,ParameterTool params2){
-            this.env2=env2;
-            this.i=i;
-            this.count=count;
-            this.params2=params2;
+
+        TndspfcdFlagResult(ExecutionEnvironment env2, Integer i, Integer count, ParameterTool params2) {
+            this.env2 = env2;
+            this.i = i;
+            this.count = count;
+            this.params2 = params2;
         }
     }
 
