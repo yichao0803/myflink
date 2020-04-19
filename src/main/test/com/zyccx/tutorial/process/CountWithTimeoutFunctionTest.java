@@ -20,12 +20,12 @@ public class CountWithTimeoutFunctionTest {
 
     @Test
     public static void main(String[] args) {
-        // 数据源
-        DataStream<Tuple2<String, String>> stream = ...;
-
-// 对KeyedStream应用ProcessFunction
-        DataStream<Tuple2<String, Long>> result = stream
-                .keyBy(0)
-                .process(new CountWithTimeoutFunction());
+//        // 数据源
+//        DataStream<Tuple2<String, String>> stream = ...;
+//
+//// 对KeyedStream应用ProcessFunction
+//        DataStream<Tuple2<String, Long>> result = stream
+//                .keyBy(0)
+//                .process(new CountWithTimeoutFunction());
     }
 }
