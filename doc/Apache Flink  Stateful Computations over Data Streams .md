@@ -4,7 +4,24 @@
 
 1、Streaming Processing Concepts (common concepts for stream processing)
 
+* Bounded and Unbounded Data and Processing 
+* Latency and Throughput 
+* Time Semantics 
+  * Processing Time 
+  * Event Time 
+  * Watermarks 
+  * Window
+  * Trigger
+
 2、Architecture
+
+* Layered APIs 
+  * SQL/Table API (dynamic tables)
+  * DataStream API (stream, windows)
+  * ProcessFunction(events, state, time)
+
+* Components of a Flink Setup 
+* Task Execution 
 
 3、State Management
 
