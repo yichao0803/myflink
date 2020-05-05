@@ -1,5 +1,7 @@
 # Apache Flink  
-- [Apache Flink](#apache-flink)
+
+
+#  Stateful Computations over Data Streams 
 - [Stateful Computations over Data Streams](#stateful-computations-over-data-streams)
   * [1. Streaming Processing Concepts (common concepts for stream processing)](#1-streaming-processing-concepts--common-concepts-for-stream-processing-)
   * [2.Architecture](#2architecture)
@@ -11,34 +13,8 @@
   * [8.Debugging and Monitoring](#8debugging-and-monitoring)
   * [9.Ecosystem](#9ecosystem)
   * [10.Use Cases](#10use-cases)
-- [问题](#--)
-- [参考资料](#----)
-
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
-
-# Apache Flink  
-[TOC]
-
-- [Apache Flink](#apache-flink)
-- [Stateful Computations over Data Streams](#stateful-computations-over-data-streams)
-  * [1.Streaming Processing Concepts (common concepts for stream processing)](#1-streaming-processing-concepts--common-concepts-for-stream-processing-)
-  * [2.Architecture](#2-architecture)
-  * [3.State Management](#3-state-management)
-  * [4.DataStream](#4-datastream)
-  * [5.Libraries](#5-libraries)
-  * [6.Table API & SQL](#6-table-api---sql)
-  * [7.Deployment and Operations](#7-deployment-and-operations)
-  * [8.Debugging and Monitoring](#8-debugging-and-monitoring)
-  * [9.Ecosystem](#9-ecosystem)
-  * [10.Use Cases](#10-use-cases)
-- [问题](#--)
-- [参考资料](#----)
-
-<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
-
-
-#  Stateful Computations over Data Streams 
+  
+  <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
 ## 1. Streaming Processing Concepts (common concepts for stream processing)
 
