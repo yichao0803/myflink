@@ -11,8 +11,8 @@
     + [8.Debugging and Monitoring](#8debugging-and-monitoring)
     + [9.Ecosystem](#9ecosystem)
     + [10.Use Cases](#10use-cases)
-  * [问题](#--)
-  * [参考资料](#----)
+  * [问题](#问题)
+  * [参考资料](#参考资料)
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
