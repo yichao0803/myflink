@@ -1,5 +1,22 @@
 # Apache Flink  
-[TOC]
+- [Apache Flink](#apache-flink)
+- [Stateful Computations over Data Streams](#stateful-computations-over-data-streams)
+  * [1、Streaming Processing Concepts (common concepts for stream processing)](#1-streaming-processing-concepts--common-concepts-for-stream-processing-)
+  * [2、Architecture](#2-architecture)
+  * [3、State Management](#3-state-management)
+  * [4、DataStream](#4-datastream)
+  * [5、Libraries](#5-libraries)
+  * [6、Table API & SQL](#6-table-api---sql)
+  * [7、Deployment and Operations](#7-deployment-and-operations)
+  * [8、Debugging and Monitoring](#8-debugging-and-monitoring)
+  * [9、Ecosystem](#9-ecosystem)
+  * [10、Use Cases](#10-use-cases)
+- [问题](#--)
+- [参考资料](#----)
+
+<small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
+
+
 #  Stateful Computations over Data Streams 
 
 ## 1、Streaming Processing Concepts (common concepts for stream processing)
@@ -250,15 +267,14 @@
 
   * Event-driven Applications
 
-    ![image-20200505110332165](D:\git\yichao0803\myflink\image\image-Apache-Flink-01.png)
-
+    ![image-Apache-Flink-01](https://raw.githubusercontent.com/yichao0803/myflink/master/image/image-Apache-Flink-01.png)
+    
   * Data Analytics Applications 
 
-    ![image-20200505110416671](D:\git\yichao0803\myflink\image\image-Apache-Flink-02.png)
-
+    ![image-Apache-Flink-02](https://raw.githubusercontent.com/yichao0803/myflink/master/image/image-Apache-Flink-02.png)
   * Data Pipeline Applications
 
-    ![image-20200505110452254](D:\git\yichao0803\myflink\image\image-Apache-Flink-03.png)
+    ![image-Apache-Flink-03](https://raw.githubusercontent.com/yichao0803/myflink/master/image/image-Apache-Flink-03.png))
 
 * Domain Type
 
@@ -268,15 +284,15 @@
 
 * Company
 
-  ![image-20200505110717953](D:\git\yichao0803\myflink\image\image-Apache-Flink-04.png)
+  ![image-Apache-Flink-04](https://raw.githubusercontent.com/yichao0803/myflink/master/image/image-Apache-Flink-04.png)
 
 
 
-## 问题
+# 问题
 
 模块 [6、Table API & SQL] 尚未细化
 
 
-##  参考资料
+#  参考资料
 
 [Apache Flink China 社区电子书合集](https://ververica.cn/developers/special-issue/)
