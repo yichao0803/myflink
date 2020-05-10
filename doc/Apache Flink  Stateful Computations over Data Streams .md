@@ -289,6 +289,7 @@
 ## 问题
 
 模块 [6.Table API & SQL] 尚未细化
+该架构图未对执行环境 ExecutionEnvironment 和 StreamExecutionEnvironment 进行分类及说明
 
 
 ##  参考资料
