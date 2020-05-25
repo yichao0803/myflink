@@ -1,7 +1,6 @@
 # Apache Flink  
-- [Apache Flink](#apache-flink)
-  * [Stateful Computations over Data Streams](#stateful-computations-over-data-streams)
-    + [1. Streaming Processing Concepts (common concepts for stream processing)](#1-streaming-processing-concepts--common-concepts-for-stream-processing-)
+  * [Apache Flink Stateful Computations over Data Streams](#apache-flink-stateful-computations-over-data-streams)
+    + [1. Streaming Processing Concepts ](#1streaming-processing-concepts)
     + [2.Architecture](#2architecture)
     + [3.State Management](#3state-management)
     + [4.DataStream](#4datastream)
@@ -16,9 +15,9 @@
 
 <small><i><a href='http://ecotrust-canada.github.io/markdown-toc/'>Table of contents generated with markdown-toc</a></i></small>
 
-##  Stateful Computations over Data Streams 
-### 1. Streaming Processing Concepts (common concepts for stream processing)
-
+##  Apache Flink Stateful Computations over Data Streams 
+### 1.Streaming Processing Concepts
+**(common concepts for stream processing)**
 * Bounded and Unbounded Data and Processing 
 * Latency and Throughput 
 * Time Semantics 
