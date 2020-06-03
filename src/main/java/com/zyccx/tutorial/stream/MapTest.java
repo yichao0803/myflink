@@ -7,7 +7,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 
 /**
- * MapTest 使用 Map 函数将输入元素值 * 2，并打印输出
+ * Map：取一个元素并产生一个元素。一个映射函数
+ * MapTest：使用 Map 函数将输入元素值 * 2，并打印输出
  */
 public class MapTest {
     public static void main(String[] args) throws Exception {
