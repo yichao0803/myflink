@@ -26,7 +26,7 @@ public class KeyByAndSumTest {
      *
      * @return
      */
-    private static List<Tuple3<String, Integer, Integer>> getSource() {
+    public static List<Tuple3<String, Integer, Integer>> getSource() {
         List<Tuple3<String, Integer, Integer>> list = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             list.add(new Tuple3<>(i % 2 == 0 ? "A" : "B", 5 - i, i));
