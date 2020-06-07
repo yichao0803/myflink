@@ -1,7 +1,9 @@
 package com.zyccx.tutorial.stream;
 
 import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple;
+import org.apache.flink.api.java.tuple.Tuple1;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -21,18 +23,6 @@ import java.util.List;
  */
 public class KeyByAndSumTest {
 
-    /**
-     * getSource
-     *
-     * @return
-     */
-    public static List<Tuple3<String, Integer, Integer>> getSource() {
-        List<Tuple3<String, Integer, Integer>> list = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            list.add(new Tuple3<>(i % 2 == 0 ? "A" : "B", 5 - i, i));
-        }
-        return list;
-    }
 
     /**
      * main
@@ -42,24 +32,26 @@ public class KeyByAndSumTest {
      */
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        DataStreamSource<Tuple3<String, Integer, Integer>> source = env.fromCollection(getSource());
-        KeyedStream<Tuple3<String, Integer, Integer>, Tuple> keyedStream = source.keyBy(0);
-        SingleOutputStreamOperator<Tuple3<String, Integer, Integer>> sum = keyedStream.sum(1);
-        SingleOutputStreamOperator<Tuple3<String, Integer, Integer>> min = keyedStream.min(1);
-        SingleOutputStreamOperator<Tuple3<String, Integer, Integer>> minBy = keyedStream.minBy(1);
-        SingleOutputStreamOperator<Tuple3<String, Integer, Integer>> reduce = keyedStream.reduce(new ReduceFunction<Tuple3<String, Integer, Integer>>() {
-            @Override
-            public Tuple3<String, Integer, Integer> reduce(Tuple3<String, Integer, Integer> value1, Tuple3<String, Integer, Integer> value2) throws Exception {
-                return new Tuple3<>(value1.f0, value1.f1 + value2.f1, value1.f2);
-            }
-        });
+        DataStreamSource<Tuple3<String, Integer, Integer>> source = env.fromCollection(KeyByData.getSource());
+        DataStreamSource<Tuple3<String, Integer, Integer>> sourceSameValue = env.fromCollection(KeyByData.getSourceSameValue());
 
-        // sum.print("sum：");
-        min.print("min：");
-        minBy.print("minBy：");
-        //reduce.print("reduce：");
+        KeyedStream<Tuple3<String, Integer, Integer>, Tuple> keyedStream = source.keyBy(0);
+        KeyedStream<Tuple3<String, Integer, Integer>, String> keyedStream1 = source.keyBy(new MyKeyBySelector());
+
+        KeyedStream<Tuple3<String, Integer, Integer>, String> keyedStreamSameValue = sourceSameValue.keyBy(new MyKeyBySelector());
+
+        // max(field) 与 maxBy(field) 的区别: maxBy 可以返回 field 最大的那条数据;而 max 则是将最大的field的值赋值给第一条数据并返回第一条数据。
+        SingleOutputStreamOperator<Tuple3<String, Integer, Integer>> min = keyedStream.min(1);
+        SingleOutputStreamOperator<Tuple3<String, Integer, Integer>> minBy = keyedStream1.minBy(1);
+        // minBy 时，当比较值相等，可以参数 first 控制返回第一个元素，还是最后一个元素
+        //SingleOutputStreamOperator<Tuple3<String, Integer, Integer>> minByFalse = keyedStreamSameValue.minBy(1, false);
+        //SingleOutputStreamOperator<Tuple3<String, Integer, Integer>> minByTrue = keyedStreamSameValue.minBy(1, true);
+
+        min.print("min");
+        minBy.print("minBy");
+//        minByFalse.print("minByFalse");
+//        minByTrue.print("minByTrue");
 
         env.execute(" key by and sum test.");
     }
-
 }
