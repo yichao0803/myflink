@@ -310,6 +310,7 @@ PCollection<KV<String, Integer>> scores = input
 在具有启发式水印的流引擎上再次运行将产生如下输出：
 
 ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-09-streaming-speculative-late-discarding.gif)
+
 图9. [**在流引擎上最大化早期/晚期触发的模式版本。**](https://fast.wistia.net/embed/iframe/li3chq4k3t?dnt=1#?secret=PEeTklYw6k)图片提供：Tyler Akidau。
 
 尽管输出的总体形状类似于[图7](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7)中的累积模式版本，但请注意，此丢弃版本中的窗格如何不重叠。 结果，每个输出彼此独立。
@@ -331,6 +332,7 @@ PCollection<KV<String, Integer>> scores = input
 
 并在流引擎上运行，这将产生如下输出：
 ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-10-streaming-speculative-late-retracting.gif)
+
 图10. [**流引擎上早期/晚期点火的累积和收缩模式版本。**](https://fast.wistia.net/embed/iframe/ksse5yiq3u?dnt=1#?secret=IZTTRScDv7)图片提供：Tyler Akidau。
 
 由于每个窗口的窗格都重叠，因此要清楚地看到缩回有点棘手。缩进以红色表示，与重叠的蓝色窗格组合在一起会产生略带紫色的颜色。我还在给定窗格中水平移动了两个输出的值（并用逗号分隔了它们的值），以转换容易区分。
@@ -381,12 +383,14 @@ PCollection<KV<String, Integer>> scores = input
 
 我们将每种方法应用于两个不同的输入集（因此，总共有六个变体）。这两个输入集将用于完全相同的事件（即，相同的值，在相同的事件时间发生），但具有不同的观察顺序。第一组是我们一直看到的观察顺序，颜色为白色；第二个值将使所有值在处理时间轴上移动，如下图12所示，颜色为紫色。您可以简单地想象紫色的例子是如果风是从东方而不是西方吹来的，则现实可能发生的另一种方式（即，复杂的分布式系统的底层集合以不同的顺序播放事件）。
 ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-12-input-toggle.gif)
+
 图12. [**在处理时间，保持值和事件时间不变的情况下改变输入观察顺序。**](https://fast.wistia.net/embed/iframe/lf3v07a065?dnt=1#?secret=WfS6Q9ax2A)图片提供：Tyler Akidau。
 
 ### **事件时间窗口**
 
 为了建立基线，我们首先将事件时间中的固定窗口与这两个观察顺序上的启发式水印进行比较。我们将重用[清单5](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L5) / [图7中](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7)的早期/晚期代码来获得以下结果。从本质上讲，左侧是我们之前看到的。右侧是第二个观察顺序的结果。这里要注意的重要一点是：即使输出的整体形状有所不同（由于处理时间的观察顺序不同），**四个窗口的最终结果仍然相同**：14、22、3和12：
 ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-13-streaming-speculative-late-toggle-joint.gif)
+
 图13. [**在相同输入的两个不同处理时间顺序上一个的事件时间窗口。**](https://fast.wistia.net/embed/iframe/hnl6whv23j?dnt=1#?secret=EosC55x5Uu)图片提供：Tyler Akidau。
 
 ### **通过触发器处理时间窗口化**
@@ -412,9 +416,13 @@ PCollection<KV<String, Integer>> scores = input
 在针对我们的输入数据的两种不同顺序在流式运行器上执行时，结果如下图14所示。该图有趣的注释：
 
 - 由于我们是通过事件时间窗格模拟处理时间窗口的，因此“窗口”在处理时间轴上画出了轮廓，这意味着它们的宽度是在Y轴而不是X轴上测量的。
+
 - 由于处理时间开窗对遇到输入数据的顺序很敏感，因此即使两个版本的事件本身在技术上都在同一时间发生，每个“窗口”的结果对于两个观察顺序中的每个也是不同的。左边是12、21、18，右边是7、36、4。
-![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-14-proc-time-discarding-joint.gif)
-图14. [**通过渐变在相同输入的两个不同处理时间顺序上的处理时间“窗口化”。**](https://fast.wistia.net/embed/iframe/befc8n62yh?dnt=1#?secret=Qj2YqkhxWS)图片提供：Tyler Akidau。
+  ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-14-proc-time-discarding-joint.gif)
+
+  
+
+  图14. [**通过渐变在相同输入的两个不同处理时间顺序上的处理时间“窗口化”。**](https://fast.wistia.net/embed/iframe/befc8n62yh?dnt=1#?secret=Qj2YqkhxWS)图片提供：Tyler Akidau。
 
 ### **通过入口时间进行处理时间窗口化**
 
@@ -472,6 +480,8 @@ PCollection<KV<String, Integer>> scores = input
 
 ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-16-Session-Merging.jpg)
 
+
+
 图16.未**合并的原型会话窗口以及合并后的会话。**图片提供：Tyler Akidau。
 
 让我们看一个示例，通过[清单8中](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L8)启用了撤回功能的早/晚代码并更新窗口以构建会话
@@ -492,6 +502,7 @@ PCollection<KV<String, Integer>> scores = input
 在流引擎上执行，您将得到下面的图17所示的内容：
 
 ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-17-sessions.gif)
+
 图17. [**会话会话窗口和流引擎上的撤回的早期和晚期触发。**](https://fast.wistia.net/embed/iframe/5eu4m6fgp1?dnt=1#?secret=rjoVnPyQyK)图片提供：Tyler Akidau。
 
 这里有很多事情，所以我将带您了解其中的一些内容：
@@ -532,6 +543,8 @@ PCollection<KV<String, Integer>> scores = input
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18d-streaming-speculative-late-discarding-466.jpg)早/晚预算[清单7](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L7) / [图9](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG9) | ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18e-streaming-speculative-late-466.jpg)早/晚累积编目[4](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L4)＆[5](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L5) / [图7](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7) | ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18f-streaming-speculative-late-retracting-466.jpg)早/晚缩回[清单8](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L8) / [图10](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG10) |
 | ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18g-proc-time-discarding-466.jpg)[清单9](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L9) / [图14的](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG14)处理时间（出价） | ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18h-ingress-time-466.jpg)加工时间（入水时间）[清单10](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L10) / [图15](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG15) | ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18i-sessions-466.jpg)会议[清单11](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L11) / [图17](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG17) |
+
+
 
 图18. **一个输入集上的九种输出变化。**图片提供：Tyler Akidau。
 
