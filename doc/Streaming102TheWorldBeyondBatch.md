@@ -212,7 +212,7 @@ PCollection<KV<String, Integer>> scores = input
 
 然后在流引擎上执行清单4或5（如前所述，具有完善的和启发式的水印），结果如下：
 
-![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure 07 - streaming speculative late joint.gif)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-07-streaming-speculative-late-joint.gif)
 
 图7. **[具有早期触发和延迟触发的流引擎上的窗口求和](https://fast.wistia.net/embed/iframe/li3chq4k3t?dnt=1#?secret=PEeTklYw6k)。**图片提供：Tyler Akidau。
 
@@ -448,7 +448,7 @@ PCollection<KV<String, Integer>> scores = input
 - 由于使用进入时间可以实现完美的水印，因此实际水印与理想水印相匹配，并以一个斜率向上和向右升。
   
 
-![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-15-ingress-time-joint .gif)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-15-ingress-time-joint.gif)
 图15. [**在相同输入的两个不同处理时间排序上，通过使用进入时间来处理时间窗口。**](https://fast.wistia.net/embed/iframe/bahkp8byjn?dnt=1#?secret=BJimg2Hfk4)图片提供：Tyler Akidau。
 
 虽然有趣的是看到了可以实现处理时间窗口的不同方式，但是这里最大的收获是我自第一篇文章以来就一直在努力：事件时间窗口与订单无关，至少在限制范围内（实际在输入完成之前，沿途窗格可能会有所不同）；处理时间窗口化不是。**如果您关心事件实际发生的时间，则必须使用事件时间窗口，否则结果将毫无意义。**我现在就下车。
