@@ -30,4 +30,5 @@ public class ConnectedStreamsTest1 {
         map.print("map");
         env.execute("connected stream test 1");
     }
+
 }
