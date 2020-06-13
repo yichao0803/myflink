@@ -13,7 +13,7 @@
 在这篇文章中，我想进一步关注上次的数据处理模式，但要更详细些，并在具体示例的背景下进行。
 
 - **Streaming 101 Redux：**简要回顾了Streaming 101中约会的概念，并添加了一个正在运行的示例以突出说明要点。
-- **Streaming 102****：流**式传输101的配套内容，详细介绍了在处理无边界数据时很重要的其他概念，并继续使用具体示例说明它们的工具。
+- **Streaming 102**：流**式传输101的配套内容，详细介绍了在处理无边界数据时很重要的其他概念，并继续使用具体示例说明它们的工具。
 
 到完成时，我们将涵盖我认为是健壮的乱序数据处理所需的核心原则和概念集；这些是进行时间推理的工具，可让您真正超越传统的批处理。为了让您了解它们的实际效果，我将使用[Dataflow SDK](https://github.com/GoogleCloudPlatform/DataflowJavaSDK)代码片段（即[Google Cloud Dataflow](https://cloud.google.com/dataflow/)的API）以及动画来提供概念的直观表示。我之所以使用Dataflow SDK而不是使人们可能不熟悉的某些东西（例如火花流或风暴）的原因是，在这一点上，实际上没有其他系统可以提供我想要覆盖的所有示例所必需的表达能力。好消息是其他项目也开始朝这个方向发展。更好的消息是我们（Google）今天[提交了](http://googlecloudplatform.blogspot.com/2016/01/Dataflow-and-open-source-proposal-to-join-the-Apache-Incubator.html)一份公告并加入Apache软件基金会，以创建一个Apache Dataflow孵化器项目（与工匠，Cloudera，Talend和其他一些公司合作），以期围绕健壮的乱序处理语义构造一个开放的社区和生态系统。由[数据流模型提供](http://www.vldb.org/pvldb/vol8/p1792-Akidau.pdf)。这将使2016年非常有趣。但是我离题了。
 
@@ -25,18 +25,18 @@
 
 在用术语讲完之后，我介绍了与处理无限制数据有关的两个重要的基本概念。我首先确定了**事件时间**（事件发生的时间）**和处理时间**（**处理过程**中观察到的时间）**之间**的**关键区别**。 。分析本身遇到的问题。然后，我介绍了**窗口化**的概念（即，沿时间边界划分数据集），这是应对无边界数据源在技术上永远不会结束这一事实的常用方法。是固定窗口和滑动窗口，但是窗口化的类型更加复杂，例如会话（其中，窗口由数据本身的特征定义，例如，捕获每个用户的活动会话，然后是不活动的间隔））的也也很广泛。除了这两个概念，我们现在将进一步研究另外三个：
 
-- **水印（****Watermarks****）：**水印是关于事件时间的输入完整性的概念。 时间值为X的水印说明：“已观察到事件时间小于X的所有输入数据。” 这样，当观察无穷尽的数据源且无已知结局时，水印可作为进度的度量标准。
-- **触发器（****Triggers****）** 触发器是一种机制，用于声明何时应相对于某些外部信号实现窗口的输出。 触发器提供了选择何时发出输出的灵活性。 它们还使得可以观察到窗口不断变化的输出。 这继而打开了随着时间推移精炼结果的大门，这允许在数据到达时提供推测性结果，并处理上游数据（修订版）随时间推移或相对于水印而言迟到的数据的变化（例如，移动场景） ，其中某人离线时某人的电话会记录各种操作及其事件时间，然后继续上传这些事件以在恢复连接后进行处理）。
-- **累加（****Accumulation****）：** 累积模式指定针对同一窗口观察到的多个结果之间的关系。 这些结果可能会完全脱节，即代表一段时间内的独立增量，或者它们之间可能存在重叠。 不同的累积模式具有不同的语义和与之相关的成本，因此可以在各种用例中找到适用性。
+- **水印（**Watermarks**）：**水印是关于事件时间的输入完整性的概念。 时间值为X的水印说明：“已观察到事件时间小于X的所有输入数据。” 这样，当观察无穷尽的数据源且无已知结局时，水印可作为进度的度量标准。
+- **触发器（**Triggers**）** 触发器是一种机制，用于声明何时应相对于某些外部信号实现窗口的输出。 触发器提供了选择何时发出输出的灵活性。 它们还使得可以观察到窗口不断变化的输出。 这继而打开了随着时间推移精炼结果的大门，这允许在数据到达时提供推测性结果，并处理上游数据（修订版）随时间推移或相对于水印而言迟到的数据的变化（例如，移动场景） ，其中某人离线时某人的电话会记录各种操作及其事件时间，然后继续上传这些事件以在恢复连接后进行处理）。
+- **累加（**Accumulation**）：** 累积模式指定针对同一窗口观察到的多个结果之间的关系。 这些结果可能会完全脱节，即代表一段时间内的独立增量，或者它们之间可能存在重叠。 不同的累积模式具有不同的语义和与之相关的成本，因此可以在各种用例中找到适用性。
 
 最后，因为我认为这样可以更轻松地理解所有这些概念之间的关系，所以我们将在回答四个问题的结构内重新探究旧的问题，并探索新的问题，我提出的所有问题对于每个无限制的数据处理问题都是至关重要的 ：
 
-- **计算出****什么****结果？****（****What****results are calculated?** **）**管道中的*转换*类型可以回答这个问题。这包括诸如计算总和，构建直方图，训练机器学习模型等之类的东西。从本质上讲，这也是经典批处理所回答的问题。
-- **在****哪里****计算****结果****？****（****Where** **in event time are results calculated?** **）**通过在管道中使用*事件时间窗口*可以回答此问题。这包括来自Streaming 101的窗口化的常见示例（固定，滑动和会话），用例似乎没有窗口化的用例（例如，如Streaming 101中所述的与时间无关的处理；经典批处理通常也属于这种情况）类别），以及其他更复杂的窗口类型，例如限时拍卖。还应注意，如果在记录到达系统时将入口时间分配为事件的事件时间，则它也可以包括处理时间窗口。
-- **在****何时****计算结果****？****（****When** **in processing time are results materialized?****）**通过使用水印和触发器可以回答此问题。这个主题有无限的变化，但是最常见的模式是在给定窗口的输入完成时使用水印来描绘，并使用触发器来指定早期结果（用于在窗口完成之前发出的推测性，部分结果）和后期结果（水印对于仅的英文完整性的*估计*，并且在水印声称给定窗口的输入完成之后，可能会收到更多输入数据）。
-- **如何****细化结果****关联？（****How** **do refinements of results relate?** **）**这个问题可以通过使用的*累加*类型来回答：替换（结果都是独立且不同的），累加（以后的结果建立在先前结果的基础上）或累加和替换（对于先前触发的累加值加上收回的值）值）。
+- **计算出*什么*结果？（*What* results are calculated? ）**管道中的*转换*类型可以回答这个问题。这包括诸如计算总和，构建直方图，训练机器学习模型等之类的东西。从本质上讲，这也是经典批处理所回答的问题。
+- **在哪里*计算*结果？（*Where* in event time are results calculated?）**通过在管道中使用*事件时间窗口*可以回答此问题。这包括来自Streaming 101的窗口化的常见示例（固定，滑动和会话），用例似乎没有窗口化的用例（例如，如Streaming 101中所述的与时间无关的处理；经典批处理通常也属于这种情况）类别），以及其他更复杂的窗口类型，例如限时拍卖。还应注意，如果在记录到达系统时将入口时间分配为事件的事件时间，则它也可以包括处理时间窗口。
+- **在*何时*计算结果？（*When* in processing time are results materialized?）**通过使用水印和触发器可以回答此问题。这个主题有无限的变化，但是最常见的模式是在给定窗口的输入完成时使用水印来描绘，并使用触发器来指定早期结果（用于在窗口完成之前发出的推测性，部分结果）和后期结果（水印对于仅的英文完整性的*估计*，并且在水印声称给定窗口的输入完成之后，可能会收到更多输入数据）。
+- **如何*细化结果*关联？（*How* do refinements of results relate?）** 这个问题可以通过使用的*累加*类型来回答：替换（结果都是独立且不同的），累加（以后的结果建立在先前结果的基础上）或累加和替换（对于先前触发的累加值加上收回的值）值）。
 
-我们将在文章的其余部分中更详细地研究每个问题。 是的，我将把这种配色方案付诸实践，以期弄清楚在“**What****/****Where****/****When****/****How** ” [[2\]中](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#_ftn2)哪些概念与哪个问题有关。
+我们将在文章的其余部分中更详细地研究每个问题。 是的，我将把这种配色方案付诸实践，以期弄清楚在“**What**/**Where**/**When**/**How** ” [[2\]中](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#_ftn2)哪些概念与哪个问题有关。
 
 ## **3 Streaming 101 回顾**
 
@@ -44,7 +44,7 @@
 
 ### ***What* : transformations**
 
-经典批处理中应用的转换回答了以下问题：“ **计算出****什么****结果？** ”尽管你们中的许多人可能已经熟悉经典的批处理，但是无论如何我们还是要从那里开始，因为它是基础，我们将添加所有其他概念。
+经典批处理中应用的转换回答了以下问题：“ **计算出*什么*结果？** ”尽管你们中的许多人可能已经熟悉经典的批处理，但是无论如何我们还是要从那里开始，因为它是基础，我们将添加所有其他概念。
 
 在本节中，我们将看一个例子：在由10个值组成的简单数据集上计算带键整体和。如果您想更实用一点，可以将其视为通过将自己的独立绽放组合在一起来您可以想象它可以很好地放置在上面并使用情况监视用例。对于每个示例，我都会包含一小段数据流Java SDK伪代码，以使管道的定义更具体。从某种意义上说，这是伪代码，有时我会弯折规则以使示例更清楚，省略细节（例如使用具体的I / O源）或简化名称（ Java 中的当前触发器名称非常冗长）;为了清楚起见，我将使用更简单的名称）除了诸如此类的小事（在我[后记中](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#PS)明确列举了随后，我将提供指向实际代码演练的链接，以供那些对可以自己编译和运行的类似示范的人的使用。
 
@@ -53,7 +53,7 @@
 - **PCollections**，代表数据集（可能是庞大的数据集），可以在这些数据集上执行并行转换（因此，名称的开头为“ P”）。
 - **PTransforms**， PCollections 用于创建新的 PCollections。 PTransforms 可以执行逐元素的转换，可以将多个元素聚合在一起，也可以是其他元素的组合 PTransforms 。
 
-![img](E:\GitOsChina\myflink\image\st102-Figure-01-Transforms.jpg)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-01-Transforms.jpg)
 
 图1. **转换类型。**图片提供：Frances Perry，经允许使用。
 
@@ -63,13 +63,12 @@
 
 因此，对于仅从I / O源中读取数据，解析团队/引发对并计算每个团队的分数总和的管道，我们会有类似的内容（请注意，您可以水平滚动代码段如果您的浏览器不够大，无法完全显示出来（例如在移动设备上）：
 
+```java
 PCollection<String> raw = IO.read(...);
-
 PCollection<KV<String, Integer>> input = raw.apply(ParDo.of(new ParseFn());
-
 PCollection<KV<String, Integer>> scores = input
-
-   .apply(Sum.integersPerKey());
+  .apply(Sum.integersPerKey());
+```
 
 Listing 1. **Summation pipeline**. Key/value data are read from an I/O source, with String (e.g., team name) as the key and Integer (e.g., individual team member scores) as the values. The values for each key are then summed together to generate per-key sums (e.g., total team score) in the output collection.
 
@@ -79,33 +78,33 @@ Listing 1. **Summation pipeline**. Key/value data are read from an I/O source, w
 
 当管道观察值时，它会在其状态下累积值，并最终将汇总结果具体化为输出。 状态和输出由矩形表示，其总值位于顶部附近，矩形所覆盖的区域表示事件时间和累积到结果中的处理时间的部分。 对于清单1中的管道，当在经典批处理引擎上执行时，它将看起来像这样（注意，您需要单击/点击下面的图片以启动动画，然后动画将永远循环直到再次单击/点击。 ）：
 
-![img](E:\GitOsChina\myflink\image\st102-Figure_02_classic_batch.gif)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure_02_classic_batch.gif)
 
 图2. **[经典批处理](https://fast.wistia.net/embed/iframe/24noytvllc?dnt=1#?secret=Nt9sguoWoI)。**图片提供：Tyler Akidau。
 
-由于这是批处理管道，因此逐渐累积状态，直到看到所有输入（由顶部的绿色虚线表示）为止，此时将产生其相应的输出51。在此示例中，我们计算的是由于我们没有应用任何特定的窗口转换，因此将所有事件的时间相加；因此，用于状态和输出的矩形覆盖了整个X轴。但是，如果我们要处理无限制的数据源，那么经典的批处理是不够的。我们等不及输入结束，因为它实际上永远不会结束。我们想要的概念之一是窗口化，这是我们在Streaming 101中引进的。因此，在第二个问题的一部分中：**结果在****哪里****计算？** ”，我们现在简要回顾一下窗口。
+由于这是批处理管道，因此逐渐累积状态，直到看到所有输入（由顶部的绿色虚线表示）为止，此时将产生其相应的输出51。在此示例中，我们计算的是由于我们没有应用任何特定的窗口转换，因此将所有事件的时间相加；因此，用于状态和输出的矩形覆盖了整个X轴。但是，如果我们要处理无限制的数据源，那么经典的批处理是不够的。我们等不及输入结束，因为它实际上永远不会结束。我们想要的概念之一是窗口化，这是我们在Streaming 101中引进的。因此，在第二个问题的一部分中：**结果在*哪里*计算？** ”，我们现在简要回顾一下窗口。
 
 ### ***Where* : windowing** 
 
 如上次讨论的那样，加窗是连续时间边界分割数据源的过程。常见的窗口策略包括固定窗口，滑动窗口和会话窗口：
 
-![img](E:\GitOsChina\myflink\image\st102-Figure-03-Windowing.jpg)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-03-Windowing.jpg)
 
 图3. **示例窗口策略**。为每个示例显示了三个不同的键，突出显示了对齐的窗口（适用于所有数据）和未对齐的窗口（适用于数据的子集）之间的差异。图片来源： Tyler Akidau，灵感来自Robert Bradshaw的插图。
 
 为了更好地了解实际情况下的窗口化，让我们采用整体求和和管道连接其窗口化为固定的两分钟窗口。使用Dataflow SDK，进行的更改是对转换的简单添加 Window.into（以蓝色文本突出显示）：
 
+```java
 PCollection<KV<String, Integer>> scores = input
+  .apply(Window.into(FixedWindows.of(Duration.standardMinutes(2))))
+  .apply(Sum.integersPerKey());
+```
 
-   .apply(Window.into(FixedWindows.of(Duration.standardMinutes(2))))
-
-   .apply(Sum.integersPerKey());
-
-清单2. 窗口求和代码。
+ 清单2. 窗口求和代码。
 
 回想一下，Dataflow提供了一个在批处理和流处理中都可以使用的统一模型，因为语义上的批处理实际上只是流的一个子集。这样，我们首先在批处理引擎上执行此管道；机制更加简单明了，当我们切换到流式引擎时，逐步为我们提供直接比较的功能。
 
-![img](E:\GitOsChina\myflink\image\st102-Figure_04_batch_fixed.gif)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure_04_batch_fixed.gif)
 
 图4. [批处理引擎上的窗口求和](https://fast.wistia.net/embed/iframe/v12dlvvgfh?dnt=1#?secret=OBobCUaDpw)。图提供：Tyler Akidau。
 
@@ -119,28 +118,28 @@ PCollection<KV<String, Integer>> scores = input
 
 ### ***When* : watermarks**
 
-水印是该问题的上半部分：“**在****何时****计算结果****？**”水印是事件时域中输入指向的时间概念。换句话说，它们是系统相对于事件流中处理的记录的事件时间（有界或无界，尽管其用途在无界情况下更为明显）预期进度和逐步的方式。
+水印是该问题的上半部分：“**在*何时*计算结果？**”水印是事件时域中输入指向的时间概念。换句话说，它们是系统相对于事件流中处理的记录的事件时间（有界或无界，尽管其用途在无界情况下更为明显）预期进度和逐步的方式。
 
 回想一下Streaming 101中的此图，这里做了一些修改，在这里我将事件时间和处理时间之间的偏差描述为大多数现实世界中分布式数据处理系统的时间的不断变化的函数。
 
-![img](E:\GitOsChina\myflink\image\st102-Figure_05_-_Event_Time_vs_Processing_Time.png)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure_05_-_Event_Time_vs_Processing_Time.png)
 
 图5. **事件时间进度，时滞和水印。**图片提供：Tyler Akidau。
 
 我定义代表真实的那条蜿蜒的红线本质上是水印。转换处理时间的位移，它捕获事件时间长度的进度。从概念上讲，您可以将水印视为函数F（P）-> E，该函数在处理时间上花费一点，而在事件时间上返回一点。（更准确地说，该函数的输入实际上是正在观察水印的管线中点上游所有内容的当前状态：输入源，缓冲数据，正在处理的数据等；但是从概念上讲，它更简单（将其视为从处理时间到事件时间的映射。）事件时间的那个点E是系统认为事件时间小于E的所有输入都可以观察到的点。换一种说法，有人断言不会再看到事件时间小于E的更多数据。根据水印的类型（完美或启发式），断言可能分别是严格的保证或有根据的猜测：
 
-- **完美的水印（****Perfect watermarks****）：**在我们对所有输入数据都拥有完备的知识的情况下，可以构造出完美的水印；在这种情况下，就没有迟到的数据；所有数据都是提早或准时的。
-- **启发式水印（****Heuristic watermarks****）：**对于许多**分布式**输入源，完全了解输入数据是不切实际的，在这种情况下，下一个最佳选择是提供启发式水印。 启发式水印使用有关输入的任何可用信息（分区，分区内的排序（如果有），文件的增长率等）来提供尽可能准确的进度估计。 在许多情况下，此类水印的预测可以非常准确。 即使这样，使用启发式水印也意味着有时可能是错误的，这将导致数据过时。 我们将在下面的触发器部分中介绍如何处理最新数据。
+- **完美的水印（**Perfect watermarks**）：**在我们对所有输入数据都拥有完备的知识的情况下，可以构造出完美的水印；在这种情况下，就没有迟到的数据；所有数据都是提早或准时的。
+- **启发式水印（**Heuristic watermarks**）：**对于许多**分布式**输入源，完全了解输入数据是不切实际的，在这种情况下，下一个最佳选择是提供启发式水印。 启发式水印使用有关输入的任何可用信息（分区，分区内的排序（如果有），文件的增长率等）来提供尽可能准确的进度估计。 在许多情况下，此类水印的预测可以非常准确。 即使这样，使用启发式水印也意味着有时可能是错误的，这将导致数据过时。 我们将在下面的触发器部分中介绍如何处理最新数据。
 
 水印是一个引人入胜且复杂的话题，要谈论的话题远远超出我在这里或边缘所能理解的范围，因此，对水印的进一步深入研究将不得不等待以后的发布。 现在，为了更好地了解水印的作用以及它们的一些缺点，让我们看两个仅使用水印来确定何时执行[清单2](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L2)的窗口化管道时实现输出的流引擎的示例。 左边的示例使用了完美的水印； 右边的使用启发式水印。
 
-![img](E:\GitOsChina\myflink\image\st102-Figure_06_streaming_wm_joint.gif)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure_06_streaming_wm_joint.gif)
 
 图6. **[具有完美（左）和启发式（右）水印的流引擎上的窗口求和](https://fast.wistia.net/embed/iframe/zbl7xyy294?dnt=1#?secret=0jpfVxCVN1)。**图片提供：Tyler Akidau。
 
 在这两种情况下，当水印通过窗口的末端时，窗口都会变为实物。 两次执行之间的主要区别在于，右侧水印计算中使用的启发式算法未考虑9的值，从而极大地改变了水印的形状[[3\]](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#_ftn3)。这些示例突出了水印的两个缺点（以及其他任何完整性的概念），特别是它们可以是：
 
-- **太慢（****Too slow****）**：当任何类型的水印由于已知的未处理数据而被延迟时（例如，由于网络带宽限制而导致输入日志缓慢增长），如果水印的进展是您唯一依赖的因素，则直接转化为输出延迟刺激效果。这在左图中最明显，在最晚到达的9处，所有后续窗口都将保留水印，即使这些窗口的输入数据已较早完成。对于第二个窗口[12:02，12:04）尤其明显，从第二个窗口出现第一个值直到我们看到该窗口的任何结果，大约要花7分钟的时间。在此示例中，启发式水印不会遇到同样严重的问题（直到输出前五分钟），但这并不是说启发式水印不会遭受水印滞后；这实际上只是我在此特定示例中选择从启发式水印中省略的记录的结果。这里的重点是：虽然水印提供了非常有用的完整性概念，但取决于产生输出的完整性通常并不理想。延迟角度。想象一下一个仪表板，其中包含按小时或天显示的重要指标。您不太可能要等待一整小时或一天才能开始看到当前窗口的结果；这是使用经典批处理系统为此类系统提供动力的痛苦点之一。取而代之的是，随着输入的变化并最终变得完整，这些窗口的结果会随着时间的推移而细化会更好。
+- **太慢（**Too slow**）**：当任何类型的水印由于已知的未处理数据而被延迟时（例如，由于网络带宽限制而导致输入日志缓慢增长），如果水印的进展是您唯一依赖的因素，则直接转化为输出延迟刺激效果。这在左图中最明显，在最晚到达的9处，所有后续窗口都将保留水印，即使这些窗口的输入数据已较早完成。对于第二个窗口[12:02，12:04）尤其明显，从第二个窗口出现第一个值直到我们看到该窗口的任何结果，大约要花7分钟的时间。在此示例中，启发式水印不会遇到同样严重的问题（直到输出前五分钟），但这并不是说启发式水印不会遭受水印滞后；这实际上只是我在此特定示例中选择从启发式水印中省略的记录的结果。这里的重点是：虽然水印提供了非常有用的完整性概念，但取决于产生输出的完整性通常并不理想。延迟角度。想象一下一个仪表板，其中包含按小时或天显示的重要指标。您不太可能要等待一整小时或一天才能开始看到当前窗口的结果；这是使用经典批处理系统为此类系统提供动力的痛苦点之一。取而代之的是，随着输入的变化并最终变得完整，这些窗口的结果会随着时间的推移而细化会更好。
 - **太快（Too fast）**：如果启发式水印的发布时间早于应有的错误，则事件发生时间早于水印的数据可能会在稍后的某个时间到达，从而产生较晚的数据。 这就是在右边的示例中发生的情况：在观察到该窗口的所有输入数据之前，水印超过了第一个窗口的末尾，从而导致输出值为5而不是14，这是不正确的。 启发式水印问题； 他们的试探性暗示他们有时会错。 因此，如果您关心正确性，仅依靠它们来确定何时实现输出是不够的。
 
 在Streaming 101中，我做了一些相当强调的声明，即完整性的概念不足以对无边界数据流进行健壮的无序处理。 这两个缺点（水印太慢或太快）是这些论点的基础。 您根本无法从仅依赖完整性概念的系统中获得低延迟和正确性。 解决这些缺点是触发因素起作用的地方。
@@ -148,33 +147,32 @@ PCollection<KV<String, Integer>> scores = input
 ### ***When* : The wonderful thing about triggers, is triggers are wonderful things!**
 **(when：关于触发器的奇妙之处在于，触发器是奇妙的事物！)** 
 
-问题的答案的下半部分是触发因素：“**在****何时****计算结果**” 触发器声明窗口的输出应在处理时间内发生（尽管触发器本身可以根据其他时域中发生的事情（例如在事件时域中进行的水印）做出这些决定）。 窗口的每个特定输出都称为窗口的窗格。
+问题的答案的下半部分是触发因素：“**在**何时**计算结果**” 触发器声明窗口的输出应在处理时间内发生（尽管触发器本身可以根据其他时域中发生的事情（例如在事件时域中进行的水印）做出这些决定）。 窗口的每个特定输出都称为窗口的窗格。
 
 用于触发的信号示例包括：
 
-- **Watermark progress (i.e., event time progress) [****水印进度（即事件时间进度****]**，是我们在[图6中](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG6)已经看到的隐式版本，其中，当水印通过窗户的末尾时，实现了输出[[4\]](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#_ftn4)。另一个用例是，当窗户的生存期超过某个有用的范围时，将触发垃圾回收，稍后将介绍一个示例。
-- **Processing time progress [****处理时间进度****]**，这对于提供定期的定期更新很有用，因为处理时间（与事件时间不同）始终或多或少地均匀地进行且没有延迟。
-- **Element counts [****元素计数****]**，对于在窗口中观察到一定数量的元素后触发触发很有用。
-- **Punctuations [****标点符号****]** 或其他与数据相关的初始化，其中某些记录或记录特征（例如EOF元素或刷新事件）指示应生成输出。
+- **Watermark progress (i.e., event time progress) [**水印进度（即事件时间进度**]**，是我们在[图6中](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG6)已经看到的隐式版本，其中，当水印通过窗户的末尾时，实现了输出[[4\]](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#_ftn4)。另一个用例是，当窗户的生存期超过某个有用的范围时，将触发垃圾回收，稍后将介绍一个示例。
+- **Processing time progress [**处理时间进度**]**，这对于提供定期的定期更新很有用，因为处理时间（与事件时间不同）始终或多或少地均匀地进行且没有延迟。
+- **Element counts [**元素计数**]**，对于在窗口中观察到一定数量的元素后触发触发很有用。
+- **Punctuations [**标点符号**]** 或其他与数据相关的初始化，其中某些记录或记录特征（例如EOF元素或刷新事件）指示应生成输出。
 
 除了基于特定信号触发的简单触发外，还有复合初始化可用于创建更复杂的触发逻辑。
 
-- **Repetitions [****重复****]****，**与处理时间触发器结合使用时特别有用，可提供定期的定期更新。
-- **Conjunctions (logical AND) [****连词（逻辑AND）****]**，仅在触发所有子触发器后才触发（例如，在水印通过窗口结尾并观察到终止的标点符号记录之后）。
-- **Disjunctions (logical OR)[****析取值（逻辑或）****]**，会在任何孩子触发解雇后触发（例如，在水印通过窗口结尾之后，否则我们会观察到终止的标点符号记录）。
-- **Sequences [****序列****]**，以预定义的顺序触发子触发器的进度。
+- **Repetitions [**重复**]**，**与处理时间触发器结合使用时特别有用，可提供定期的定期更新。
+- **Conjunctions (logical AND) [**连词（逻辑AND）**]**，仅在触发所有子触发器后才触发（例如，在水印通过窗口结尾并观察到终止的标点符号记录之后）。
+- **Disjunctions (logical OR)[**析取值（逻辑或）**]**，会在任何孩子触发解雇后触发（例如，在水印通过窗口结尾之后，否则我们会观察到终止的标点符号记录）。
+- **Sequences [**序列**]**，以预定义的顺序触发子触发器的进度。
 
 为了使触发器的概念更加具体（并给我们一些基础），我们继续将清单6中的隐式默认触发器添加到[清单2](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L2)的代码中，来明确显示[图6中](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG6)使用的默认触发器：
 
+```java
 PCollection<KV<String, Integer>> scores = input
-
-   .apply(Window.into(FixedWindows.of(Duration.standardMinutes(2)))
-
-​     .triggering(AtWatermark()))
-
+  .apply(Window.into(FixedWindows.of(Duration.standardMinutes(2)))
+               .triggering(AtWatermark()))
   .apply(Sum.integersPerKey());
+```
 
-清单3.**显式默认触发器****。**
+清单3.**显式默认触发器。**
 
 考虑到这一点，并且对必须提供哪些触发器有基本的了解，我们可以着眼于解决水印太慢或太快的问题。 在这两种情况下，我们本质上都希望在水印前进超过窗口末尾之前或之后为给定的窗口提供某种常规的物化更新（除了在水印阈值处收到的更新之外） 通过窗口的结尾）。 因此，我们需要某种重复触发。 问题就变成了：我们在重复什么？
 
@@ -186,43 +184,35 @@ PCollection<KV<String, Integer>> scores = input
 
 最后，我们需要精心安排这些各种触发因素的时间：提前，准时和延迟。 我们可以使用 Sequence 触发器和特殊的 OrFinally 触发器来执行此操作，该触发器将安装一个子触发器，该子触发器在子触发器触发时终止父触发器。
 
+```java
 PCollection<KV<String, Integer>> scores = input
-
-   .apply(Window.into(FixedWindows.of(Duration.standardMinutes(2)))
-
-​     .triggering(Sequence(
-
-​       Repeat(AtPeriod(Duration.standardMinutes(1)))
-
-​         .OrFinally(AtWatermark()),
-
-​       Repeat(AtCount(1))))
-
-   .apply(Sum.integersPerKey());
+  .apply(Window.into(FixedWindows.of(Duration.standardMinutes(2)))
+               .triggering(Sequence(
+                 Repeat(AtPeriod(Duration.standardMinutes(1)))
+                   .OrFinally(AtWatermark()),
+                 Repeat(AtCount(1))))
+  .apply(Sum.integersPerKey());
+```
 
 清单4. **手动指定的早期和晚期点火。**
 
 但是，这很罗唆。 并给出了repeated-early | on-time | repeated-late 触发很常见，我们在Dataflow中提供了一个自定义（但在语义上等效）的API，以使指定此类触发器更加简单明了：
 
+```java
 PCollection<KV<String, Integer>> scores = input
-
-   .apply(Window.into(FixedWindows.of(Duration.standardMinutes(2)))
-
-​     .triggering(
-
-​       AtWatermark()
-
-​         .withEarlyFirings(AtPeriod(Duration.standardMinutes(1)))
-
-​         .withLateFirings(AtCount(1))))
-
-   .apply(Sum.integersPerKey());
+  .apply(Window.into(FixedWindows.of(Duration.standardMinutes(2)))
+               .triggering(
+                 AtWatermark()
+                   .withEarlyFirings(AtPeriod(Duration.standardMinutes(1)))
+                   .withLateFirings(AtCount(1))))
+  .apply(Sum.integersPerKey());
+```
 
 清单5. **通过早期/晚期API进行早期和晚期触发。**
 
 然后在流引擎上执行清单4或5（如前所述，具有完善的和启发式的水印），结果如下：
 
-![img](E:\GitOsChina\myflink\image\st102-Figure 07 - streaming speculative late joint.gif)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-07-streaming-speculative-late-joint.gif)
 
 图7. **[具有早期触发和延迟触发的流引擎上的窗口求和](https://fast.wistia.net/embed/iframe/li3chq4k3t?dnt=1#?secret=PEeTklYw6k)。**图片提供：Tyler Akidau。
 
@@ -238,27 +228,22 @@ PCollection<KV<String, Integer>> scores = input
 ### ***When* :  allowed lateness (i.e., garbage collection)**
 ***When* : 允许拒绝（即垃圾收集）**
 
-在继续讨论最后一个问题（**How** do refinements of results relate?”）之前，我想谈谈长期存在的无序流处理系统中的实际必要性：垃圾收集。 在[图7](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7)的启发式水印示例中，每个窗口的持久状态在示例的整个生命周期中徘徊； 这是必要的，以便我们能够/在它们到达时适当地处理较晚的数据。 但是，尽管能够一直保持所有持久状态直到时间结束是很棒的，但实际上，在处理无限制数据源时，为给定窗口保留状态（包括元数据）通常是不切实际的 无限期地 我们最终将用完磁盘空间。
+在继续讨论最后一个问题（***How* do refinements of results relate?**”）之前，我想谈谈长期存在的无序流处理系统中的实际必要性：垃圾收集。 在[图7](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7)的启发式水印示例中，每个窗口的持久状态在示例的整个生命周期中徘徊； 这是必要的，以便我们能够/在它们到达时适当地处理较晚的数据。 但是，尽管能够一直保持所有持久状态直到时间结束是很棒的，但实际上，在处理无限制数据源时，为给定窗口保留状态（包括元数据）通常是不切实际的 无限期地 我们最终将用完磁盘空间。
 
 结果，任何现实世界中无序的处理系统都需要提供某种方式来限制其处理的窗口的生命周期。 一种简洁明了的方法是在系统中允许的延迟内定义一个范围，即，对任何给定的记录（相对于水印）延迟多长时间来限制系统进行处理； 在此范围之后到达的所有数据都将被丢弃。 限定了各个数据的延迟时间之后，您还可以精确地确定窗口状态必须保持多长时间：直到水印超过窗口末尾的延迟范围[[5\]](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#_ftn5)为止。 但是，此外，您还赋予了系统自由，可在观察到数据后立即删除所有数据，这意味着该系统不会浪费资源来处理没人关心的数据。
 
 由于允许的延迟与水印之间的相互作用有些微妙，因此值得一看。 让我们采用[清单5](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L5) / [图7中](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7)的启发式水印管道，并添加一分钟的延迟地平线（请注意，严格选择此特定地平线是因为它很好地适合了该图；对于实际使用案例，可能会使用更大的地平线 更加实用）：
 
+```java
 PCollection<KV<String, Integer>> scores = input
-
-.apply(Window.into(FixedWindows.of(Duration.standardMinutes(2)))
-
-   .triggering(
-
-​     AtWatermark()
-
-​     .withEarlyFirings(AtPeriod(Duration.standardMinutes(1)))
-
-​     .withLateFirings(AtCount(1)))
-
-  .withAllowedLateness(Duration.standardMinutes(1)))
-
-.apply(Sum.integersPerKey());
+  .apply(Window.into(FixedWindows.of(Duration.standardMinutes(2)))
+               .triggering(
+                 AtWatermark()
+                   .withEarlyFirings(AtPeriod(Duration.standardMinutes(1)))
+                   .withLateFirings(AtCount(1)))
+               .withAllowedLateness(Duration.standardMinutes(1)))
+  .apply(Sum.integersPerKey());
+```
 
 清单6. **允许延迟的提前和连续射击**
 
@@ -268,7 +253,7 @@ PCollection<KV<String, Integer>> scores = input
 - 一旦水印通过了窗口的延迟地平线，该窗口就会关闭，这意味着该窗口的所有状态都将被丢弃。 我留下一个虚线矩形，显示关闭窗口时（在两个域中）所覆盖的时间范围，一条小尾巴向右延伸以表示该窗口的延迟水平（与水印进行对比）。
 - 仅对于此图，我为第一个窗口添加了一个值为6的附加延迟数据。6 延迟了，但仍在允许的延迟范围内，因此将其合并到值为11的更新结果中。9 到达延迟范围之外，因此将其丢弃。
 
-![img](E:\GitOsChina\myflink\image\st102-Figure_08_streaming_speculative_late_allowed_lateness_1min.gif)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure_08_streaming_speculative_late_allowed_lateness_1min.gif)
 
 图8. [**具有早期触发和延迟触发并允许延迟的流引擎上的窗口求和。**](https://fast.wistia.net/embed/iframe/muwcqnrmxf?dnt=1#?secret=fxzNdOy9hu)图片提供：Tyler Akidau。
 
@@ -281,12 +266,12 @@ PCollection<KV<String, Integer>> scores = input
 
 ### ***How* : accumulation**
 
-当使用触发器在一段时间内为单个窗口生成多个窗格时，我们发现自己面临最后一个问题：“**如何****细化结果****关联？（****How** **do refinements of results relate?** **）**” 到目前为止，在示例中，每个连续的窗格都基于紧接其前的窗格。 但是，实际上存在三种不同的累积模式[[6\]](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#_ftn6)：
+当使用触发器在一段时间内为单个窗口生成多个窗格时，我们发现自己面临最后一个问题：“**如何**细化结果**关联？（**How** **do refinements of results relate?** **）**” 到目前为止，在示例中，每个连续的窗格都基于紧接其前的窗格。 但是，实际上存在三种不同的累积模式[[6\]](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#_ftn6)：
 
-- **Discarding [****丢弃****]****：**每次实现窗格时，任何存储状态都会被丢弃。 这意味着每个连续的窗格都独立于之前的窗格。 当下游使用者自己执行某种累加时，例如当将整数发送到希望接收增量的系统中时，丢弃模式将很有用，它将累加起来以产生最终计数。
-- **Accumulating [****累积****]****：**如在[图7中](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7)每次实现窗格时，任何存储的状态都会保留，将来的输入会累积到现有状态中。 这意味着每个连续的窗格都建立在先前的窗格上。 当以后的结果可以简单地覆盖以前的结果时，例如在将输出存储在BigTable或HBase之类的键/值存储中时，累积模式很有用。
+- **Discarding [丢弃]：** 每次实现窗格时，任何存储状态都会被丢弃。 这意味着每个连续的窗格都独立于之前的窗格。 当下游使用者自己执行某种累加时，例如当将整数发送到希望接收增量的系统中时，丢弃模式将很有用，它将累加起来以产生最终计数。
+- **Accumulating [累积]：** 如在[图7中](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7)每次实现窗格时，任何存储的状态都会保留，将来的输入会累积到现有状态中。 这意味着每个连续的窗格都建立在先前的窗格上。 当以后的结果可以简单地覆盖以前的结果时，例如在将输出存储在BigTable或HBase之类的键/值存储中时，累积模式很有用。
 
-- **Accumulating & retracting [****累积和收缩****]****：**与累积模式一样，但是在生成新窗格时，也会为以前的窗格产生独立的收缩。 回缩（与新的累加结果相结合）本质上是一种明确的说法，“我之前告诉过您结果是X，但我错了。 摆脱我上次告诉您的X，然后将其替换为Y。” 在两种情况下，撤回特别有用：
+- **Accumulating & retracting [累积和收缩]：**与累积模式一样，但是在生成新窗格时，也会为以前的窗格产生独立的收缩。 回缩（与新的累加结果相结合）本质上是一种明确的说法，“我之前告诉过您结果是X，但我错了。 摆脱我上次告诉您的X，然后将其替换为Y。” 在两种情况下，撤回特别有用：
 
 - - 当下游的使用者按**不同的维度对数据**进行**重新分组**时，新值很可能最终以与先前值不同的键输入，从而最终以不同的组结束。 在这种情况下，新值不能只覆盖旧值； 相反，您需要撤消操作以从旧组中删除旧值，而新值将合并到新组中。
   - 当使用**动态窗口**（例如会话，我们将在下面更详细地介绍）时，由于窗口合并，新值可能会替换多个以前的窗口。 在这种情况下，可能难以仅从新窗口确定要替换哪些旧窗口。 对旧窗口进行显式缩回可以使任务简单明了。
@@ -303,8 +288,8 @@ PCollection<KV<String, Integer>> scores = input
 
 Table 1. **Comparing accumulation modes using the second window from Figure 7.**
 
-- **Discarding** **[****丢弃****]：**每个窗格仅合并在该特定窗格期间到达的值。 因此，观察到的最终值不能完全捕获总和。 但是，如果要对所有独立窗格本身求和，将得出正确的答案22。这就是为什么当下游使用者自己在物化窗格上执行某种聚合时，丢弃模式很有用的原因。
-- **Accumulating [****累积****]****：**：如[图7](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7)所示，每个窗格都包含在该特定窗格中到达的值，以及先前窗格中的所有值。 这样，观察到的最终值正确地捕获了22的总和。但是，如果要对各个窗格本身进行求和，则实际上将分别对窗格2和1的输入进行两次和三次计数，得出不正确的总和为 **51**。这就是为什么当您可以简单地用新值覆盖以前的值时，累加模式最有用的原因：新值已经合并了到目前为止看到的所有数据。
+- **Discarding [丢弃]：**每个窗格仅合并在该特定窗格期间到达的值。 因此，观察到的最终值不能完全捕获总和。 但是，如果要对所有独立窗格本身求和，将得出正确的答案22。这就是为什么当下游使用者自己在物化窗格上执行某种聚合时，丢弃模式很有用的原因。
+- **Accumulating [累积]：**如[图7](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7)所示，每个窗格都包含在该特定窗格中到达的值，以及先前窗格中的所有值。 这样，观察到的最终值正确地捕获了22的总和。但是，如果要对各个窗格本身进行求和，则实际上将分别对窗格2和1的输入进行两次和三次计数，得出不正确的总和为 **51**。这就是为什么当您可以简单地用新值覆盖以前的值时，累加模式最有用的原因：新值已经合并了到目前为止看到的所有数据。
 - **累积和撤回：**。每个窗格都包括新的累积模式值以及上一个窗格的值的撤回。 这样，观察到的最后一个值（非收缩）以及所有实例化窗格的总和（包括收缩）都为您提供了正确的答案22。这就是收缩如此强大的原因。
 
 为了看到实际的丢弃模式，我们将对[清单5](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L5)进行以下更改：
@@ -324,7 +309,8 @@ PCollection<KV<String, Integer>> scores = input
 
 在具有启发式水印的流引擎上再次运行将产生如下输出：
 
-![img](E:\GitOsChina\myflink\image\st102-Figure-09-streaming-speculative-late-discarding.gif)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-09-streaming-speculative-late-discarding.gif)
+
 图9. [**在流引擎上最大化早期/晚期触发的模式版本。**](https://fast.wistia.net/embed/iframe/li3chq4k3t?dnt=1#?secret=PEeTklYw6k)图片提供：Tyler Akidau。
 
 尽管输出的总体形状类似于[图7](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7)中的累积模式版本，但请注意，此丢弃版本中的窗格如何不重叠。 结果，每个输出彼此独立。
@@ -345,14 +331,15 @@ PCollection<KV<String, Integer>> scores = input
 清单8. **早/晚点火的累积和缩回模式版本。**
 
 并在流引擎上运行，这将产生如下输出：
-![img](E:\GitOsChina\myflink\image\st102-Figure-10-streaming-speculative-late-retracting.gif)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-10-streaming-speculative-late-retracting.gif)
+
 图10. [**流引擎上早期/晚期点火的累积和收缩模式版本。**](https://fast.wistia.net/embed/iframe/ksse5yiq3u?dnt=1#?secret=IZTTRScDv7)图片提供：Tyler Akidau。
 
 由于每个窗口的窗格都重叠，因此要清楚地看到缩回有点棘手。缩进以红色表示，与重叠的蓝色窗格组合在一起会产生略带紫色的颜色。我还在给定窗格中水平移动了两个输出的值（并用逗号分隔了它们的值），以转换容易区分。
 
 并排比较图[9](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG9)，图[7](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7)（仅启发式）和图[10](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG9)的最终帧，可以很好地对比这三种模式的视觉效果：
 
-![img](E:\GitOsChina\myflink\image\st102-Figure11-V2.jpg)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure11-V2.jpg)
 
 图11. **累积模式的并排比较：体积（左），累积（中）和累积与缩回（右）。**图片提供：Tyler Akidau。
 
@@ -395,13 +382,15 @@ PCollection<KV<String, Integer>> scores = input
 - **Processing-time windowing via ingress time [通过入口时间进行处理时间窗口化]**
 
 我们将每种方法应用于两个不同的输入集（因此，总共有六个变体）。这两个输入集将用于完全相同的事件（即，相同的值，在相同的事件时间发生），但具有不同的观察顺序。第一组是我们一直看到的观察顺序，颜色为白色；第二个值将使所有值在处理时间轴上移动，如下图12所示，颜色为紫色。您可以简单地想象紫色的例子是如果风是从东方而不是西方吹来的，则现实可能发生的另一种方式（即，复杂的分布式系统的底层集合以不同的顺序播放事件）。
-![img](E:\GitOsChina\myflink\image\st102-Figure-12-input-toggle.gif)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-12-input-toggle.gif)
+
 图12. [**在处理时间，保持值和事件时间不变的情况下改变输入观察顺序。**](https://fast.wistia.net/embed/iframe/lf3v07a065?dnt=1#?secret=WfS6Q9ax2A)图片提供：Tyler Akidau。
 
 ### **事件时间窗口**
 
 为了建立基线，我们首先将事件时间中的固定窗口与这两个观察顺序上的启发式水印进行比较。我们将重用[清单5](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L5) / [图7中](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7)的早期/晚期代码来获得以下结果。从本质上讲，左侧是我们之前看到的。右侧是第二个观察顺序的结果。这里要注意的重要一点是：即使输出的整体形状有所不同（由于处理时间的观察顺序不同），**四个窗口的最终结果仍然相同**：14、22、3和12：
-![img](E:\GitOsChina\myflink\image\st102-Figure-13-streaming-speculative-late-toggle-joint.gif)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-13-streaming-speculative-late-toggle-joint.gif)
+
 图13. [**在相同输入的两个不同处理时间顺序上一个的事件时间窗口。**](https://fast.wistia.net/embed/iframe/hnl6whv23j?dnt=1#?secret=EosC55x5Uu)图片提供：Tyler Akidau。
 
 ### **通过触发器处理时间窗口化**
@@ -427,9 +416,13 @@ PCollection<KV<String, Integer>> scores = input
 在针对我们的输入数据的两种不同顺序在流式运行器上执行时，结果如下图14所示。该图有趣的注释：
 
 - 由于我们是通过事件时间窗格模拟处理时间窗口的，因此“窗口”在处理时间轴上画出了轮廓，这意味着它们的宽度是在Y轴而不是X轴上测量的。
+
 - 由于处理时间开窗对遇到输入数据的顺序很敏感，因此即使两个版本的事件本身在技术上都在同一时间发生，每个“窗口”的结果对于两个观察顺序中的每个也是不同的。左边是12、21、18，右边是7、36、4。
-![img](E:\GitOsChina\myflink\image\st102-Figure-14-proc-time-discarding-joint.gif)
-图14. [**通过渐变在相同输入的两个不同处理时间顺序上的处理时间“窗口化”。**](https://fast.wistia.net/embed/iframe/befc8n62yh?dnt=1#?secret=Qj2YqkhxWS)图片提供：Tyler Akidau。
+  ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-14-proc-time-discarding-joint.gif)
+
+  
+
+  图14. [**通过渐变在相同输入的两个不同处理时间顺序上的处理时间“窗口化”。**](https://fast.wistia.net/embed/iframe/befc8n62yh?dnt=1#?secret=Qj2YqkhxWS)图片提供：Tyler Akidau。
 
 ### **通过入口时间进行处理时间窗口化**
 
@@ -463,7 +456,7 @@ PCollection<KV<String, Integer>> scores = input
 - 由于使用进入时间可以实现完美的水印，因此实际水印与理想水印相匹配，并以一个斜率向上和向右升。
   
 
-![img](E:\GitOsChina\myflink\image\st102-Figure-15-ingress-time-joint .gif)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-15-ingress-time-joint.gif)
 图15. [**在相同输入的两个不同处理时间排序上，通过使用进入时间来处理时间窗口。**](https://fast.wistia.net/embed/iframe/bahkp8byjn?dnt=1#?secret=BJimg2Hfk4)图片提供：Tyler Akidau。
 
 虽然有趣的是看到了可以实现处理时间窗口的不同方式，但是这里最大的收获是我自第一篇文章以来就一直在努力：事件时间窗口与订单无关，至少在限制范围内（实际在输入完成之前，沿途窗格可能会有所不同）；处理时间窗口化不是。**如果您关心事件实际发生的时间，则必须使用事件时间窗口，否则结果将毫无意义。**我现在就下车。
@@ -485,7 +478,9 @@ PCollection<KV<String, Integer>> scores = input
 
 他们提供一般会话支持的关键见解是，按照定义，一个完整的会话窗口是一组较小的重叠窗口的组合，每个窗口包含一个记录，每个记录中的每个记录与下一个记录之间的间隔为静止不大于预定义的超时。因此，即使我们无序地观察会话中的数据，我们也可以简单地通过将任何重叠的窗口合并为单个数据到达来建立最终会话。
 
-![img](E:\GitOsChina\myflink\image\st102-Figure-16-Session-Merging.jpg)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-16-Session-Merging.jpg)
+
+
 
 图16.未**合并的原型会话窗口以及合并后的会话。**图片提供：Tyler Akidau。
 
@@ -506,7 +501,8 @@ PCollection<KV<String, Integer>> scores = input
 
 在流引擎上执行，您将得到下面的图17所示的内容：
 
-![img](E:\GitOsChina\myflink\image\st102-Figure-17-sessions.gif)
+![img](https://github.com/yichao0803/myflink/raw/master/image/st102-Figure-17-sessions.gif)
+
 图17. [**会话会话窗口和流引擎上的撤回的早期和晚期触发。**](https://fast.wistia.net/embed/iframe/5eu4m6fgp1?dnt=1#?secret=rjoVnPyQyK)图片提供：Tyler Akidau。
 
 这里有很多事情，所以我将带您了解其中的一些内容：
@@ -543,10 +539,12 @@ PCollection<KV<String, Integer>> scores = input
 
 第三，最后，要获得这种流处理模型所提供的灵活性（从最后开始，这才是真正的目的：平衡诸如正确性，延迟和成本之类的竞争压力），回顾输出的主要变化我们仅需很少的代码更改就可以实现相同的数据集：
 
-| ![img](E:\GitOsChina\myflink\image\st102-18a-classic-batch-466.jpg)经典批处理[清单1](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L1) / [图2](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG2) | ![img](E:\GitOsChina\myflink\image\st102-18b-batch-fixed-466.jpg)修复了Windows批处理[清单2](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L2) / [图4](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG4) | ![img](E:\GitOsChina\myflink\image\st102-466-Figure-18c-streaming-wm-final.jpg)修复了Windows流水印[清单2](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L2) / [图6](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG6) |
+| ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18a-classic-batch-466.jpg)经典批处理[清单1](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L1) / [图2](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG2) | ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18b-batch-fixed-466.jpg)修复了Windows批处理[清单2](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L2) / [图4](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG4) | ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-466-Figure-18c-streaming-wm-final.jpg)修复了Windows流水印[清单2](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L2) / [图6](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG6) |
 | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| ![img](E:\GitOsChina\myflink\image\st102-18d-streaming-speculative-late-discarding-466.jpg)早/晚预算[清单7](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L7) / [图9](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG9) | ![img](E:\GitOsChina\myflink\image\st102-18e-streaming-speculative-late-466.jpg)早/晚累积编目[4](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L4)＆[5](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L5) / [图7](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7) | ![img](E:\GitOsChina\myflink\image\st102-18f-streaming-speculative-late-retracting-466.jpg)早/晚缩回[清单8](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L8) / [图10](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG10) |
-| ![img](E:\GitOsChina\myflink\image\st102-18g-proc-time-discarding-466.jpg)[清单9](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L9) / [图14的](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG14)处理时间（出价） | ![img](E:\GitOsChina\myflink\image\st102-18h-ingress-time-466.jpg)加工时间（入水时间）[清单10](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L10) / [图15](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG15) | ![img](E:\GitOsChina\myflink\image\st102-18i-sessions-466.jpg)会议[清单11](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L11) / [图17](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG17) |
+| ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18d-streaming-speculative-late-discarding-466.jpg)早/晚预算[清单7](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L7) / [图9](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG9) | ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18e-streaming-speculative-late-466.jpg)早/晚累积编目[4](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L4)＆[5](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L5) / [图7](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG7) | ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18f-streaming-speculative-late-retracting-466.jpg)早/晚缩回[清单8](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L8) / [图10](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG10) |
+| ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18g-proc-time-discarding-466.jpg)[清单9](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L9) / [图14的](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG14)处理时间（出价） | ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18h-ingress-time-466.jpg)加工时间（入水时间）[清单10](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L10) / [图15](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG15) | ![img](https://github.com/yichao0803/myflink/raw/master/image/st102-18i-sessions-466.jpg)会议[清单11](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#L11) / [图17](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/#FIG17) |
+
+
 
 图18. **一个输入集上的九种输出变化。**图片提供：Tyler Akidau。
 
