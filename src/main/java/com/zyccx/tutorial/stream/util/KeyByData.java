@@ -1,4 +1,4 @@
-package com.zyccx.tutorial.stream;
+package com.zyccx.tutorial.stream.util;
 
 import org.apache.flink.api.java.tuple.Tuple3;
 

@@ -1,6 +1,7 @@
 package com.zyccx.tutorial.stream;
 
 
+import com.zyccx.tutorial.stream.util.WordCountData;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.MultipleParameterTool;

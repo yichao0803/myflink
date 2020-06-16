@@ -1,4 +1,4 @@
-package com.zyccx.tutorial.stream;
+package com.zyccx.tutorial.stream.util;
 
 public class WordCountData {
     public static final String[] WORDS = new String[]{
