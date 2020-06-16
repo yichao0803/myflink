@@ -7,7 +7,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.co.CoMapFunction;
 
 /**
- * 本示例，中 connect 实现了不同类的数据流的链接
+ * 本示例，中 connect map 实现了不同类的数据流的链接
  */
 public class ConnectedStreamsTest1 {
     public static void main(String[] args) throws Exception {

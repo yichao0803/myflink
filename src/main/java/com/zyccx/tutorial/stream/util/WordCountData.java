@@ -38,4 +38,7 @@ public class WordCountData {
             "The fair Ophelia!--Nymph, in thy orisons",
             "Be all my sins remember'd."
     };
+
+    public static final String[] WORDS_ONE_LINE = new String[]{
+            "To be, or not to be,--that is the question:--"};
 }

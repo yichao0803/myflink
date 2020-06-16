@@ -24,7 +24,7 @@ public class WindowWordCount {
 
         } else {
 
-            text = env.fromElements(WordCountData.WORDS);
+            text = env.fromElements(WordCountData.WORDS_ONE_LINE);
 
         }
         //
