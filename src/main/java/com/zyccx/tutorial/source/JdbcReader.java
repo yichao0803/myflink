@@ -1,13 +1,5 @@
 package com.zyccx.tutorial.source;
 
-/**
- * TODO
- *
- * @author by Zhangyichao
- * @date 2020/1/6 15:48
- * @see JdbcReader
- */
-
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
@@ -20,12 +12,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import com.zyccx.tutorial.common.ConfigKeys;
-
 /**
- * @Description mysql source
- * @Author jiangxiaozhi
- * @Date 2018/10/15 17:05
- **/
+ * TODO
+ *
+ * @author by Zhangyichao
+ * @date 2020/1/6 15:48
+ * @see JdbcReader
+ */
 public class JdbcReader extends RichSourceFunction<Tuple2<String, String>> {
     private static final Logger logger = LoggerFactory.getLogger(JdbcReader.class);
 
