@@ -21,9 +21,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+
 
 public class HiveTest {
 
@@ -63,7 +61,7 @@ public class HiveTest {
         String url = "jdbc:hive2://192.168.100.203:10000/ads";// hive库地址+库名
         String user = "hue";// 用户名
         String password = "hue_123";// 密码
-        String sql = "select pk_id,id from inpat_operation a limit 10000";
+        String sql = "select pk_id,id from inpat_operation a where a.start_dt<='2020-06-04' and a.end_dt>='2020-06-04' and a.org_id='14'";
 
         private Connection connection = null;
         private PreparedStatement ps = null;
@@ -88,7 +86,7 @@ public class HiveTest {
                 String id = resultSet.getString("id");
                 logger.debug("HiveReader name:{}", pkId);
                 Tuple2<String, String> tuple2 = new Tuple2<>();
-                tuple2.setFields(id, pkId);
+                tuple2.setFields(pkId,id);
                 ctx.collect(tuple2);//发送结果，结果是tuple2类型，2表示两个元素，可根据实际情况选择
 
             }

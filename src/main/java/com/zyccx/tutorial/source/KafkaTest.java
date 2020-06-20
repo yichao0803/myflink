@@ -8,6 +8,9 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
 import java.util.Properties;
 
+/**
+ * 读取 kafka 的数据
+ */
 public class KafkaTest {
     public static void main(String[] args) throws Exception {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -17,9 +20,11 @@ public class KafkaTest {
         properties.setProperty("bootstrap.servers", "192.168.100.80:9092");
         properties.setProperty("zookeeper.connect", "192.168.100.80:2181");
         properties.setProperty("group.id", "test-01");
+        properties.setProperty("auto.offset.reset","earliest");// 设置从起始位置消费
 
         DataStreamSource<String> topic = env.addSource(
-                new FlinkKafkaConsumer<>("9957467286a44449821016030f2f45d2-expression-data", new SimpleStringSchema(), properties));
+                new FlinkKafkaConsumer<>("9957467286a44449821016030f2f45d2-expression-data",
+                        new SimpleStringSchema(), properties));
 
         topic.print();
 
