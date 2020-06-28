@@ -36,6 +36,7 @@ public class KafkaPartitionTest {
                 "9957467286a44449821016030f2f45d2-expression-data",
                 2),
                 0L);
+
         flinkKafkaConsumer.setStartFromSpecificOffsets(specificStartOffsets);
 
         DataStreamSource<String> topic = env.addSource(flinkKafkaConsumer);

@@ -2,11 +2,12 @@ package com.zyccx.tutorial.sink;
 
 import java.sql.*;
 
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import java.sql.PreparedStatement;
 
-public class HiveSink extends RichSinkFunction<String> {
+public class HiveSink extends RichSinkFunction<Tuple3<String,Integer, Integer>> {
     private PreparedStatement state ;
     private Connection conn ;
     private String querySQL = "";
@@ -17,7 +18,7 @@ public class HiveSink extends RichSinkFunction<String> {
         super.open(parameters);
         conn = getConnection();
 
-        querySQL = "insert into transaction(transaction_id,card_number,terminal_id,transaction_time,transaction_type,amount) values(? ,?, ?, ?, ?, ?)";
+        querySQL = "insert into t1(str,v1,v2) values(? ,?, ?)";
         state = conn.prepareStatement(querySQL);
 
     }
@@ -35,11 +36,11 @@ public class HiveSink extends RichSinkFunction<String> {
     }
 
     @Override
-    public void invoke(String value, Context context) throws Exception {
-        String[] arryValue=value.split(",");
-        for (int i = 0; i < arryValue.length; i++) {
-            state.setString(i+1,arryValue[i]);
-        }
+    public void invoke(Tuple3<String,Integer, Integer> value, Context context) throws Exception {
+        state.setString(1,value.f0);
+        state.setInt(2,value.f1);
+        state.setInt(3,value.f2);
+
         state.executeUpdate();
     }
 
@@ -47,9 +48,9 @@ public class HiveSink extends RichSinkFunction<String> {
         Connection conn = null;
         try {
             String jdbc = "org.apache.hive.jdbc.HiveDriver";
-            String url = "jdbc:hive2://192.168.229.129:10000/test";
-            String user = "lz";  // 重要！此处必须填入具有HDFS写入权限的用户名，比如hive文件夹的owner
-            String password = "";
+            String url = "jdbc:hive2://192.168.100.203:10000/jh_rep";
+            String user = "hue";  // 重要！此处必须填入具有HDFS写入权限的用户名，比如hive文件夹的owner
+            String password = "hue_123";
             Class.forName(jdbc);
             conn = DriverManager.getConnection(url, user, password);
 

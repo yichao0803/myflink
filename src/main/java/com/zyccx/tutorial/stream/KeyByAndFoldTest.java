@@ -1,9 +1,11 @@
 package com.zyccx.tutorial.stream;
 
+import com.zyccx.tutorial.sink.HiveSink;
 import com.zyccx.tutorial.stream.util.KeyByData;
 import org.apache.flink.api.common.functions.FoldFunction;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
@@ -13,7 +15,9 @@ public class KeyByAndFoldTest {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        DataStreamSource<Tuple3<String, Integer, Integer>> source = env.fromCollection(KeyByData.getSource());
+        DataStream<Tuple3<String, Integer, Integer>> source = env.fromCollection(KeyByData.getSource());
+
+
         KeyedStream<Tuple3<String, Integer, Integer>, Tuple> keyedStream = source.keyBy(0);
         SingleOutputStreamOperator<String> fold = keyedStream.fold("start", new FoldFunction<Tuple3<String, Integer, Integer>, String>() {
             @Override
@@ -21,6 +25,8 @@ public class KeyByAndFoldTest {
                 return current + "-" + value.f1;
             }
         });
+
+
 
         fold.print("fold: ");
 

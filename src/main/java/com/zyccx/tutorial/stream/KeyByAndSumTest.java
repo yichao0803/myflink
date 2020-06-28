@@ -1,5 +1,6 @@
 package com.zyccx.tutorial.stream;
 
+import com.zyccx.tutorial.sink.HiveSink;
 import com.zyccx.tutorial.stream.util.KeyByData;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple3;
@@ -28,6 +29,8 @@ public class KeyByAndSumTest {
         DataStreamSource<Tuple3<String, Integer, Integer>> source = env.fromCollection(KeyByData.getSource());
         DataStreamSource<Tuple3<String, Integer, Integer>> sourceSameValue = env.fromCollection(KeyByData.getSourceSameValue());
 
+        source.addSink(new HiveSink());
+
         KeyedStream<Tuple3<String, Integer, Integer>, Tuple> keyedStream = source.keyBy(0);
         KeyedStream<Tuple3<String, Integer, Integer>, String> keyedStream1 = source.keyBy(new MyKeyBySelector());
 
@@ -42,6 +45,8 @@ public class KeyByAndSumTest {
 
         min.print("min");
         minBy.print("minBy");
+
+
 //        minByFalse.print("minByFalse");
 //        minByTrue.print("minByTrue");
 
