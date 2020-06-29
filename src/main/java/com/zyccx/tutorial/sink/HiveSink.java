@@ -2,14 +2,18 @@ package com.zyccx.tutorial.sink;
 
 import java.sql.*;
 
+import com.zyccx.tutorial.stream.util.KeyByData;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.datastream.DataStreamSource;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
+
 import java.sql.PreparedStatement;
 
-public class HiveSink extends RichSinkFunction<Tuple3<String,Integer, Integer>> {
-    private PreparedStatement state ;
-    private Connection conn ;
+public class HiveSink extends RichSinkFunction<Tuple3<String, Integer, Integer>> {
+    private PreparedStatement state;
+    private Connection conn;
     private String querySQL = "";
 //    private String sql;
 
@@ -36,10 +40,10 @@ public class HiveSink extends RichSinkFunction<Tuple3<String,Integer, Integer>> 
     }
 
     @Override
-    public void invoke(Tuple3<String,Integer, Integer> value, Context context) throws Exception {
-        state.setString(1,value.f0);
-        state.setInt(2,value.f1);
-        state.setInt(3,value.f2);
+    public void invoke(Tuple3<String, Integer, Integer> value, Context context) throws Exception {
+        state.setString(1, value.f0);
+        state.setInt(2, value.f1);
+        state.setInt(3, value.f2);
 
         state.executeUpdate();
     }
@@ -61,8 +65,13 @@ public class HiveSink extends RichSinkFunction<Tuple3<String,Integer, Integer>> 
     }
 
 
-    public static void main(String[] args) {
-        getConnection();
+    public static void main(String[] args) throws Exception {
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        DataStreamSource<Tuple3<String, Integer, Integer>> source = env.fromCollection(KeyByData.getSource());
+
+        source.addSink(new HiveSink());
+
+        env.execute("hive sink test.");
     }
 
 }
