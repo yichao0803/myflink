@@ -135,15 +135,6 @@ under the License.
 			<version>${flink.version}</version>
 			<scope>compile</scope>
 		</dependency>
-
-		<!-- Hadoop Dependencies -->
-
-		<dependency>
-			<groupId>org.apache.flink</groupId>
-			<artifactId>flink-hadoop-compatibility_2.11</artifactId>
-			<version>${flink.version}</version>
-			<scope>compile</scope>
-		</dependency>
         <!-- Flink Dependency -->
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -157,12 +148,37 @@ under the License.
             <version>${flink.version}</version>
 			<scope>compile</scope>
         </dependency>
-
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-connector-filesystem_2.11</artifactId>
+			<version>1.8.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-hdfs</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-common</artifactId>
+			<version>2.6.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.hadoop</groupId>
+			<artifactId>hadoop-client</artifactId>
+			<version>2.6.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-csv</artifactId>
 			<version>${flink.version}</version>
 			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-connector-filesystem_2.11</artifactId>
+			<version>${flink.version}</version>
 		</dependency>
 
         <!-- Hive Dependency -->
@@ -180,12 +196,7 @@ under the License.
 			<version>1.1.0</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.hadoop</groupId>
-			<artifactId>hadoop-common</artifactId>
-			<version>3.1.2</version>
-			<scope>compile</scope>
-		</dependency>
+
 		<dependency>
 			<groupId>jdk.tools</groupId>
 			<artifactId>jdk.tools</artifactId>
@@ -194,6 +205,12 @@ under the License.
 			<systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
 		</dependency>
 		<!-- hive end -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.8</version>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
