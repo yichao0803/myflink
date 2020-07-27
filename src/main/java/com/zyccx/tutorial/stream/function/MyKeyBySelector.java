@@ -1,4 +1,4 @@
-package com.zyccx.tutorial.stream;
+package com.zyccx.tutorial.stream.function;
 
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple3;

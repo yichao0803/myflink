@@ -1,5 +1,7 @@
 package com.zyccx.tutorial.stream;
 
+import com.zyccx.tutorial.stream.function.MyKeyBySelector;
+import com.zyccx.tutorial.stream.function.MyReduce;
 import com.zyccx.tutorial.stream.util.KeyByData;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
