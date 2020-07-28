@@ -1,6 +1,7 @@
 package com.zyccx.tutorial.stream;
 
 import com.zyccx.tutorial.sink.HiveSink;
+import com.zyccx.tutorial.stream.function.MyKeyBySelector;
 import com.zyccx.tutorial.stream.util.KeyByData;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple3;
