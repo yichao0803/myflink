@@ -38,6 +38,8 @@ root@node01 cloudera]# cat /usr/share/maven/conf/settings.xml
 
 ## 4、修改 flink 和 flink-shaded 的 pom.xml 文件
 
+在 project 的节点下增加 repositories 的以下代码
+
 ```xml
 <repositories>
     <repository>

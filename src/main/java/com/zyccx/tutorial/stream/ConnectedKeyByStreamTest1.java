@@ -44,12 +44,14 @@ public class ConnectedKeyByStreamTest1 {
                 .connect(sourceSame.keyBy(1))
                 .process(new SourceKeyedCoProcessFunction());
 
-        DataStream<Tuple3<String, Integer, Integer>> sideOutput = tuple3SingleOutputStreamOperator.getSideOutput(outputTagTwo);
+        DataStream<Tuple3<String, Integer, Integer>> sideOutputOne = tuple3SingleOutputStreamOperator.getSideOutput(outputTagOne);
+        DataStream<Tuple3<String, Integer, Integer>> sideOutputTwo = tuple3SingleOutputStreamOperator.getSideOutput(outputTagTwo);
 
         source.print("source");
         sourceSame.print("sourceSame");
         tuple3SingleOutputStreamOperator.print("tuple3SingleOutputStreamOperator");
-        sideOutput.print("sideOutput");
+        sideOutputOne.print("sideOutputOne");
+        sideOutputTwo.print("sideOutputTwo");
 
         env.execute("ConnectedKeyByStreamTest1");
 
