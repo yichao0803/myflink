@@ -4,7 +4,7 @@ package com.zyccx.tutorial.stream;
 import com.zyccx.tutorial.stream.util.WordCountData;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.utils.MultipleParameterTool;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
@@ -37,7 +37,7 @@ public class WordCount {
     public static void main(String[] args) throws Exception {
 
         // Checking input parameters
-        final MultipleParameterTool params = MultipleParameterTool.fromArgs(args);
+        final ParameterTool params = ParameterTool.fromArgs(args);
 
         // set up the execution environment
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -49,13 +49,19 @@ public class WordCount {
         DataStream<String> text = null;
         if (params.has("input")) {
             // union all the inputs from text files
-            for (String input : params.getMultiParameterRequired("input")) {
-                if (text == null) {
-                    text = env.readTextFile(input);
-                } else {
-                    text = text.union(env.readTextFile(input));
-                }
+            String input = params.get("input");
+            if (text == null) {
+                text = env.readTextFile(input);
+            } else {
+                text = text.union(env.readTextFile(input));
             }
+//            for (String input : params.getMultiParameterRequired("input")) {
+//                if (text == null) {
+//                    text = env.readTextFile(input);
+//                } else {
+//                    text = text.union(env.readTextFile(input));
+//                }
+//            }
             Preconditions.checkNotNull(text, "Input DataStream should not be null.");
         } else {
             System.out.println("Executing WordCount example with default input data set.");

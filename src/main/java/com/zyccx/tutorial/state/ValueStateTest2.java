@@ -33,6 +33,8 @@ public class ValueStateTest2 {
         singleOutputStreamOperator.print();
 
         env.execute("ValueStateTest2");
+
+
     }
 
     private static class CountWindowAverage extends RichFlatMapFunction<Tuple2<Long, Long>, Tuple2<Long, Long>> {
