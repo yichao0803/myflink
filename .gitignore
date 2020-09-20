@@ -2,3 +2,7 @@
 target
 *.iml
 dependency-reduced-pom.xml
+UserBehavior.csv
+UserBehavior.zip
+/UserBehavior.csv
+/UserBehavior.zip
