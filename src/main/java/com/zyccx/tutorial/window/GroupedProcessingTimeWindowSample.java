@@ -48,7 +48,7 @@ public class GroupedProcessingTimeWindowSample {
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env= StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(2);
+        env.setParallelism(1);
 
         DataStream<Tuple2<String,Integer>> ds =env.addSource(new DataSource());
         KeyedStream<Tuple2<String,Integer>,Tuple> keyedStream=ds.keyBy(0);
