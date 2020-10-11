@@ -15,12 +15,13 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  */
 public class MysqlTest {
     public static void main(String[] args) throws Exception {
-        StreamExecutionEnvironment env= StreamExecutionEnvironment.getExecutionEnvironment();
-        env.enableCheckpointing(5000);
-        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-        env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
-        DataStream dataStream=env.addSource(new JdbcReader());
-        dataStream.print();
-        env.execute("flink connected mysql");
+
+//        StreamExecutionEnvironment env= StreamExecutionEnvironment.getExecutionEnvironment();
+//        env.enableCheckpointing(5000);
+//        env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+//        env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
+//        DataStream dataStream=env.addSource(new JdbcReader());
+//        dataStream.print();
+//        env.execute("flink connected mysql");
     }
 }
