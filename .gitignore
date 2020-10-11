@@ -1,6 +1,7 @@
 .idea
 target
 *.iml
+*.txt
 dependency-reduced-pom.xml
 UserBehavior.csv
 UserBehavior.zip
