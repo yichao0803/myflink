@@ -27,7 +27,7 @@ public class SqlSink {
                 "  'connector.path' =' file:///E:\\GitOsChina\\myflink\\fs_table.csv',\n" +
                 "  'format.type' ='csv' "+
                 ")");
-//
+
        tEnv.sqlUpdate("INSERT INTO fs_table SELECT name,age from students");
 
         env.execute("SqlSink job");
