@@ -71,4 +71,6 @@ public class HowToEmitATable {
 
         tEnv.execute("stream table job");
     }
+
+
 }
