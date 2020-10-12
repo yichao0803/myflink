@@ -7,7 +7,7 @@ import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
-import org.apache.flink.api.java.utils.MultipleParameterTool;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -29,7 +29,7 @@ public class ConnectedKeyByStreamTest1 {
 
     public void run(String[] args) throws Exception {
         // Checking input parameters
-        final MultipleParameterTool params = MultipleParameterTool.fromArgs(args);
+        final ParameterTool params = ParameterTool.fromArgs(args);
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.getConfig().setGlobalJobParameters(params);
         env.setParallelism(1);
