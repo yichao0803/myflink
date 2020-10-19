@@ -208,13 +208,13 @@ under the License.
 			<scope>compile</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>jdk.tools</groupId>
-			<artifactId>jdk.tools</artifactId>
-			<version>1.8</version>
-			<scope>system</scope>
-			<systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>jdk.tools</groupId>-->
+<!--			<artifactId>jdk.tools</artifactId>-->
+<!--			<version>1.8</version>-->
+<!--			<scope>system</scope>-->
+<!--			<systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>-->
+<!--		</dependency>-->
 		<!-- hive end -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -337,6 +337,11 @@ under the License.
 			<artifactId>httpcore</artifactId>
 			<version>4.4.1</version>
 			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jetbrains</groupId>
+			<artifactId>annotations</artifactId>
+			<version>13.0</version>
 		</dependency>
 	</dependencies>
 
