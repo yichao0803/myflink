@@ -12,7 +12,7 @@ import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindo
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 /**
- * 测试增量聚合函数：aggregateFunction
+ * 测试增量聚合函数：aggregateFunction 返回值： f0、聚合 f2 的平均数
  */
 public class AggregateFunctionTest {
     /**

@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindo
 import org.apache.flink.streaming.api.windowing.time.Time;
 
 /**
- * 测试增量聚合函数 ReduceFunction
+ * 测试增量聚合函数 ReduceFunction，分组内  value1.fo,value.f1及 f2的聚合值（sum）
  */
 public class ReduceFunctionTest {
 
