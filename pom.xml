@@ -35,7 +35,7 @@ under the License.
 		<java.version>1.8</java.version>
 		<hadoop.version>2.6.0</hadoop.version>
 		<scala.binary.version>2.11</scala.binary.version>
-		<elasticsearch.version>6.8.8</elasticsearch.version>
+		<elasticsearch.version>7.11.2</elasticsearch.version>
 		<maven.compiler.source>${java.version}</maven.compiler.source>
 		<maven.compiler.target>${java.version}</maven.compiler.target>
 	</properties>
